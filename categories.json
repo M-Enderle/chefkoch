@@ -1,0 +1,931 @@
+{
+  "category": "all",
+  "url": "https://www.chefkoch.de/rezepte/kategorien/",
+  "items": [
+    {
+      "category": "Backen & S\u00fc\u00dfspeisen",
+      "url": "https://www.chefkoch.de/rs/s0g47/Suessspeisen-Backen-Rezepte.html",
+      "items": [
+        {
+          "category": "Brot und Br\u00f6tchen",
+          "url": "https://www.chefkoch.de/rs/s0g145/Brot-und-Broetchen-Rezepte.html",
+          "items": null
+        },
+        {
+          "category": "Cremes",
+          "url": "https://www.chefkoch.de/rs/s0g52/Creme-Rezepte.html",
+          "items": null
+        },
+        {
+          "category": "Eis",
+          "url": "https://www.chefkoch.de/rs/s0g50/Eis-Rezepte.html",
+          "items": null
+        },
+        {
+          "category": "Kekse & Pl\u00e4tzchen",
+          "url": "https://www.chefkoch.de/rs/s0g159/Kekse-Plaetzchen-Rezepte.html",
+          "items": null
+        },
+        {
+          "category": "Konfiserie",
+          "url": "https://www.chefkoch.de/rs/s0g170/Konfiserie-Rezepte.html",
+          "items": null
+        },
+        {
+          "category": "Kuchen",
+          "url": "https://www.chefkoch.de/rs/s0g48/Kuchen-Rezepte.html",
+          "items": null
+        },
+        {
+          "category": "Tarte/Quiche",
+          "url": "https://www.chefkoch.de/rs/s0g51/Tarte-Quiche-Zwiebelkuchen-Rezepte.html",
+          "items": null
+        },
+        {
+          "category": "Torten",
+          "url": "https://www.chefkoch.de/rs/s0g49/Torten-Rezepte.html",
+          "items": null
+        }
+      ]
+    },
+    {
+      "category": "Getr\u00e4nke",
+      "url": "https://www.chefkoch.de/rs/s0g102/Getraenke.html",
+      "items": [
+        {
+          "category": "Bowle",
+          "url": "https://www.chefkoch.de/rs/s0g109/Bowlen-Rezepte.html",
+          "items": null
+        },
+        {
+          "category": "Cocktail",
+          "url": "https://www.chefkoch.de/rs/s0g103/Cocktail-Rezepte.html",
+          "items": [
+            {
+              "category": "Alkoholfrei",
+              "url": "https://www.chefkoch.de/rs/s0g108/alkoholfreie-Cocktails.html",
+              "items": null
+            },
+            {
+              "category": "Longdrink",
+              "url": "https://www.chefkoch.de/rs/s0g105/Longdrink-Rezepte.html",
+              "items": null
+            }
+          ]
+        },
+        {
+          "category": "Kaffee, Tee & Kakao",
+          "url": "https://www.chefkoch.de/rs/s0g165/Kaffee-Tee-Kakao-Rezepte.html",
+          "items": null
+        },
+        {
+          "category": "Lik\u00f6r",
+          "url": "https://www.chefkoch.de/rs/s0g166/Likoer.html",
+          "items": null
+        },
+        {
+          "category": "Punsch",
+          "url": "https://www.chefkoch.de/rs/s0g110/Punsch-Rezepte.html",
+          "items": null
+        },
+        {
+          "category": "Shake",
+          "url": "https://www.chefkoch.de/rs/s0g104/Shake-Rezepte.html",
+          "items": null
+        }
+      ]
+    },
+    {
+      "category": "Men\u00fcart",
+      "url": "https://www.chefkoch.de/rs/s0g1/Menueart.html",
+      "items": [
+        {
+          "category": "Beilage",
+          "url": "https://www.chefkoch.de/rs/s0g26/Beilagen-Rezepte.html",
+          "items": [
+            {
+              "category": "Gem\u00fcse",
+              "url": "https://www.chefkoch.de/rs/s0g27/Gemuese-Beilagen.html",
+              "items": null
+            },
+            {
+              "category": "H\u00fclsenfr\u00fcchte",
+              "url": "https://www.chefkoch.de/rs/s0g176/Huelsenfruechte-Beilagen.html",
+              "items": null
+            },
+            {
+              "category": "Kartoffeln",
+              "url": "https://www.chefkoch.de/rs/s0g28/Kartoffel-Beilagen.html",
+              "items": null
+            },
+            {
+              "category": "Kl\u00f6\u00dfe",
+              "url": "https://www.chefkoch.de/rs/s0g180/Knoedel-Kloss-Beilagen.html",
+              "items": null
+            },
+            {
+              "category": "Nudeln",
+              "url": "https://www.chefkoch.de/rs/s0g30/Nudelrezepte.html",
+              "items": null
+            },
+            {
+              "category": "Reis/Getreide",
+              "url": "https://www.chefkoch.de/rs/s0g29/Reis-Beilagen.html",
+              "items": null
+            }
+          ]
+        },
+        {
+          "category": "Dessert",
+          "url": "https://www.chefkoch.de/rs/s0g19/Dessert-Rezepte.html",
+          "items": null
+        },
+        {
+          "category": "Fr\u00fchst\u00fcck",
+          "url": "https://www.chefkoch.de/rs/s0g31/Fruehstuecksrezepte.html",
+          "items": null
+        },
+        {
+          "category": "Hauptspeise",
+          "url": "https://www.chefkoch.de/rs/s0g9/Hauptspeisen-Rezepte.html",
+          "items": [
+            {
+              "category": "Eier",
+              "url": "https://www.chefkoch.de/rs/s0g187/Hauptspeise-Eier.html",
+              "items": null
+            },
+            {
+              "category": "Eintopf",
+              "url": "https://www.chefkoch.de/rs/s0g137/Eintopf-Rezepte.html",
+              "items": null
+            },
+            {
+              "category": "Fisch",
+              "url": "https://www.chefkoch.de/rs/s0g10/Fisch-Rezepte.html",
+              "items": null
+            },
+            {
+              "category": "Gefl\u00fcgel",
+              "url": "https://www.chefkoch.de/rs/s0g11/Gefluegel-Haehnchen-Rezepte.html",
+              "items": [
+                {
+                  "category": "Wildgefl\u00fcgel",
+                  "url": "https://www.chefkoch.de/rs/s0g153/Wildgefluegel-Rezepte.html",
+                  "items": null
+                }
+              ]
+            },
+            {
+              "category": "Gem\u00fcse",
+              "url": "https://www.chefkoch.de/rs/s0g114/Gemuese-Rezepte.html",
+              "items": null
+            },
+            {
+              "category": "H\u00fclsenfr\u00fcchte",
+              "url": "https://www.chefkoch.de/rs/s0g177/Huelsenfruechte-Rezepte.html",
+              "items": null
+            },
+            {
+              "category": "Innereien",
+              "url": "https://www.chefkoch.de/rs/s0g122/Innereien-Rezepte.html",
+              "items": null
+            },
+            {
+              "category": "Kartoffeln",
+              "url": "https://www.chefkoch.de/rs/s0g155/Kartoffeln-Rezepte.html",
+              "items": null
+            },
+            {
+              "category": "Krustentier & Muscheln",
+              "url": "https://www.chefkoch.de/rs/s0g12/Muschel-Meeresfruechte-Rezepte.html",
+              "items": null
+            },
+            {
+              "category": "Lamm & Ziege",
+              "url": "https://www.chefkoch.de/rs/s0g113/Ziege-Lamm-Rezepte.html",
+              "items": null
+            },
+            {
+              "category": "Pasta & Nudel",
+              "url": "https://www.chefkoch.de/rs/s0g13/Pasta-Nudel-Rezepte.html",
+              "items": null
+            },
+            {
+              "category": "Pilze",
+              "url": "https://www.chefkoch.de/rs/s0g156/Pilze-Rezepte.html",
+              "items": null
+            },
+            {
+              "category": "Pizza",
+              "url": "https://www.chefkoch.de/rs/s0g125/Pizza-Rezepte.html",
+              "items": null
+            },
+            {
+              "category": "Reis/Getreide",
+              "url": "https://www.chefkoch.de/rs/s0g162/Reis-Rezepte.html",
+              "items": null
+            },
+            {
+              "category": "Rind",
+              "url": "https://www.chefkoch.de/rs/s0g14/Rindfleisch-Rezepte.html",
+              "items": null
+            },
+            {
+              "category": "Schwein",
+              "url": "https://www.chefkoch.de/rs/s0g15/Schweinefleisch-Rezepte.html",
+              "items": null
+            },
+            {
+              "category": "Wild & Kaninchen",
+              "url": "https://www.chefkoch.de/rs/s0g16/Wild-Rezepte.html",
+              "items": null
+            }
+          ]
+        },
+        {
+          "category": "Salat",
+          "url": "https://www.chefkoch.de/rs/s0g20/Salat-Rezepte.html",
+          "items": [
+            {
+              "category": "Eier & K\u00e4se",
+              "url": "https://www.chefkoch.de/rs/s0g139/Eier-Kaese-Salate-Rezepte.html",
+              "items": null
+            },
+            {
+              "category": "Fleisch & Wurst",
+              "url": "https://www.chefkoch.de/rs/s0g24/Fleischsalat-Wurstsalat-Rezepte.html",
+              "items": null
+            },
+            {
+              "category": "Fr\u00fcchte",
+              "url": "https://www.chefkoch.de/rs/s0g22/Obstsalat-Fruchsalat-Rezepte.html",
+              "items": null
+            },
+            {
+              "category": "Gem\u00fcse",
+              "url": "https://www.chefkoch.de/rs/s0g163/Gemuese-Salate-Rezepte.html",
+              "items": null
+            },
+            {
+              "category": "Kartoffel",
+              "url": "https://www.chefkoch.de/rs/s0g138/Kartoffelsalat-Rezepte.html",
+              "items": null
+            },
+            {
+              "category": "Krustentier & Fisch",
+              "url": "https://www.chefkoch.de/rs/s0g23/Meeresfruechtesalat-Fischsalat-Rezepte.html",
+              "items": null
+            },
+            {
+              "category": "Pilze",
+              "url": "https://www.chefkoch.de/rs/s0g186/Pilzsalat-Rezepte.html",
+              "items": null
+            },
+            {
+              "category": "Reis/Nudeln/Getreide",
+              "url": "https://www.chefkoch.de/rs/s0g140/Reissalat-Nudelsalat-Rezepte.html",
+              "items": null
+            },
+            {
+              "category": "Salatdressing",
+              "url": "https://www.chefkoch.de/rs/s0g21/Salatdressing-Salatsauce-Salatso\u00dfe-Rezepte.html",
+              "items": null
+            },
+            {
+              "category": "Warme Salate",
+              "url": "https://www.chefkoch.de/rs/s0g25/Warmer-Salat-Rezepte.html",
+              "items": null
+            }
+          ]
+        },
+        {
+          "category": "Suppen",
+          "url": "https://www.chefkoch.de/rs/s0g5/Suppen-Rezepte.html",
+          "items": [
+            {
+              "category": "Einlagen",
+              "url": "https://www.chefkoch.de/rs/s0g168/Suppen-mit-Einlagen-Rezepte.html",
+              "items": null
+            },
+            {
+              "category": "Gebundene",
+              "url": "https://www.chefkoch.de/rs/s0g7/Gebundene-Suppen-Rezepte.html",
+              "items": null
+            },
+            {
+              "category": "Klare",
+              "url": "https://www.chefkoch.de/rs/s0g6/klare-Suppen-Rezepte.html",
+              "items": null
+            },
+            {
+              "category": "Spezial",
+              "url": "https://www.chefkoch.de/rs/s0g8/besondere-Suppenrezepte.html",
+              "items": null
+            }
+          ]
+        },
+        {
+          "category": "Vorspeisen",
+          "url": "https://www.chefkoch.de/rs/s0g2/Vorspeisen-Rezepte.html",
+          "items": [
+            {
+              "category": "Kalt",
+              "url": "https://www.chefkoch.de/rs/s0g17/kalte-Vorspeisen-Rezepte.html",
+              "items": null
+            },
+            {
+              "category": "Warm",
+              "url": "https://www.chefkoch.de/rs/s0g18/warme-Vorspeisen-Rezepte.html",
+              "items": null
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "category": "Regional",
+      "url": "https://www.chefkoch.de/rs/s0g85/Rezepte-nach-Laendern.html",
+      "items": [
+        {
+          "category": "Afrika",
+          "url": "https://www.chefkoch.de/rs/s0g101/Afrikanische-Rezepte.html",
+          "items": [
+            {
+              "category": "\u00c4gypten",
+              "url": "https://www.chefkoch.de/rs/s0g181/Aegyptische-Rezepte.html",
+              "items": null
+            },
+            {
+              "category": "Marokko",
+              "url": "https://www.chefkoch.de/rs/s0g131/Marokkanische-Rezepte.html",
+              "items": null
+            },
+            {
+              "category": "S\u00fcdafrika",
+              "url": "https://www.chefkoch.de/rs/s0g178/Suedafrikanische-Rezepte.html",
+              "items": null
+            }
+          ]
+        },
+        {
+          "category": "Amerika",
+          "url": "https://www.chefkoch.de/rs/s0g98/Amerikanische-Rezepte.html",
+          "items": [
+            {
+              "category": "Lateinamerika",
+              "url": "https://www.chefkoch.de/rs/s0g100/lateinamerikanische-Rezepte.html",
+              "items": null
+            },
+            {
+              "category": "Mexico",
+              "url": "https://www.chefkoch.de/rs/s0g115/Mexikanische-Rezepte.html",
+              "items": null
+            },
+            {
+              "category": "USA & Kanada",
+              "url": "https://www.chefkoch.de/rs/s0g99/Kanada-USA-Rezepte.html",
+              "items": null
+            }
+          ]
+        },
+        {
+          "category": "Asien",
+          "url": "https://www.chefkoch.de/rs/s0g94/Asiatische-Rezepte.html",
+          "items": [
+            {
+              "category": "Chinesisch",
+              "url": "https://www.chefkoch.de/rs/s0g95/Chinesische-Rezepte.html",
+              "items": null
+            },
+            {
+              "category": "Indisch",
+              "url": "https://www.chefkoch.de/rs/s0g97/Indische-Rezepte.html",
+              "items": null
+            },
+            {
+              "category": "Japanisch",
+              "url": "https://www.chefkoch.de/rs/s0g96/Sushi-Japanische-Rezepte.html",
+              "items": null
+            },
+            {
+              "category": "Koreanisch",
+              "url": "https://www.chefkoch.de/rs/s0g195/Koreanische-Rezepte.html",
+              "items": null
+            },
+            {
+              "category": "Thailand",
+              "url": "https://www.chefkoch.de/rs/s0g132/Thailaendische-Rezepte.html",
+              "items": null
+            },
+            {
+              "category": "Vietnam",
+              "url": "https://www.chefkoch.de/rs/s0g185/Vietnamesische-Rezepte.html",
+              "items": null
+            }
+          ]
+        },
+        {
+          "category": "Australien",
+          "url": "https://www.chefkoch.de/rs/s0g128/Australische-Rezepte.html",
+          "items": null
+        },
+        {
+          "category": "Europa",
+          "url": "https://www.chefkoch.de/rs/s0g86/Europaeische-Rezepte.html",
+          "items": [
+            {
+              "category": "Belgien",
+              "url": "https://www.chefkoch.de/rs/s0g172/Belgische-Rezepte.html",
+              "items": null
+            },
+            {
+              "category": "D\u00e4nemark",
+              "url": "https://www.chefkoch.de/rs/s0g147/Daenische-Rezepte.html",
+              "items": null
+            },
+            {
+              "category": "Deutschland",
+              "url": "https://www.chefkoch.de/rs/s0g87/Deutsche-Rezepte.html",
+              "items": null
+            },
+            {
+              "category": "Finnland",
+              "url": "https://www.chefkoch.de/rs/s0g152/Finnische-Rezepte.html",
+              "items": null
+            },
+            {
+              "category": "Frankreich",
+              "url": "https://www.chefkoch.de/rs/s0g91/Franzoesische-Rezepte.html",
+              "items": null
+            },
+            {
+              "category": "Griechenland",
+              "url": "https://www.chefkoch.de/rs/s0g118/Griechische-Rezepte.html",
+              "items": null
+            },
+            {
+              "category": "Gro\u00dfbritannien & Irland",
+              "url": "https://www.chefkoch.de/rs/s0g129/Grossbritannien-Englische-Irische-Rezepte.html",
+              "items": null
+            },
+            {
+              "category": "Italien",
+              "url": "https://www.chefkoch.de/rs/s0g88/Italienische-Rezepte.html",
+              "items": null
+            },
+            {
+              "category": "Luxemburg",
+              "url": "https://www.chefkoch.de/rs/s0g167/Luxemburg-Rezepte.html",
+              "items": null
+            },
+            {
+              "category": "Malta",
+              "url": "https://www.chefkoch.de/rs/s0g175/Malata-Rezepte.html",
+              "items": null
+            },
+            {
+              "category": "Niederlande",
+              "url": "https://www.chefkoch.de/rs/s0g130/Niederlande-Hollaendische-Rezepte.html",
+              "items": null
+            },
+            {
+              "category": "Norwegen",
+              "url": "https://www.chefkoch.de/rs/s0g171/norwegen-Rezepte.html",
+              "items": null
+            },
+            {
+              "category": "\u00d6sterreich",
+              "url": "https://www.chefkoch.de/rs/s0g90/oesterreichische-Rezepte.html",
+              "items": null
+            },
+            {
+              "category": "Polen",
+              "url": "https://www.chefkoch.de/rs/s0g93/Polnische-Rezepte.html",
+              "items": null
+            },
+            {
+              "category": "Portugal",
+              "url": "https://www.chefkoch.de/rs/s0g189/Portugiesische-Rezepte.html",
+              "items": null
+            },
+            {
+              "category": "Russland",
+              "url": "https://www.chefkoch.de/rs/s0g191/Russische-Rezepte.html",
+              "items": null
+            },
+            {
+              "category": "Schweden",
+              "url": "https://www.chefkoch.de/rs/s0g151/schwedische-Rezepte.html",
+              "items": null
+            },
+            {
+              "category": "Schweiz",
+              "url": "https://www.chefkoch.de/rs/s0g89/Schweizer-Rezepte.html",
+              "items": null
+            },
+            {
+              "category": "Spanien",
+              "url": "https://www.chefkoch.de/rs/s0g92/Spanische-Rezepte.html",
+              "items": null
+            },
+            {
+              "category": "Tschechien",
+              "url": "https://www.chefkoch.de/rs/s0g135/Tschechische-Rezepte.html",
+              "items": null
+            },
+            {
+              "category": "T\u00fcrkei",
+              "url": "https://www.chefkoch.de/rs/s0g133/Tuerkische-Rezepte.html",
+              "items": null
+            },
+            {
+              "category": "Ungarn",
+              "url": "https://www.chefkoch.de/rs/s0g127/Ungarische-Rezepte.html",
+              "items": null
+            },
+            {
+              "category": "Wei\u00dfrussland",
+              "url": "https://www.chefkoch.de/rs/s0g144/Weissrussische-Rezepte.html",
+              "items": null
+            }
+          ]
+        },
+        {
+          "category": "Karibik & Exotik",
+          "url": "https://www.chefkoch.de/rs/s0g134/karibische-Rezepte.html",
+          "items": null
+        },
+        {
+          "category": "Mittlerer und Naher Osten",
+          "url": "https://www.chefkoch.de/rs/s0g184/arabische-Rezepte.html",
+          "items": null
+        },
+        {
+          "category": "Osteuropa",
+          "url": "https://www.chefkoch.de/rs/s0g143/osteuropaeische-Rezepte.html",
+          "items": null
+        }
+      ]
+    },
+    {
+      "category": "Saisonal",
+      "url": "https://www.chefkoch.de/rs/s0g53/saisonale-Rezepte.html",
+      "items": [
+        {
+          "category": "Fr\u00fchling",
+          "url": "https://www.chefkoch.de/rs/s0g54/Fruehling-Rezepte.html",
+          "items": null
+        },
+        {
+          "category": "Halloween",
+          "url": "https://www.chefkoch.de/rs/s0g116/Halloween-Rezepte.html",
+          "items": null
+        },
+        {
+          "category": "Herbst",
+          "url": "https://www.chefkoch.de/rs/s0g56/Herbst-Rezepte.html",
+          "items": null
+        },
+        {
+          "category": "Ostern",
+          "url": "https://www.chefkoch.de/rs/s0g58/Osterrezepte.html",
+          "items": null
+        },
+        {
+          "category": "Silvester",
+          "url": "https://www.chefkoch.de/rs/s0g60/Silvester-Rezepte.html",
+          "items": null
+        },
+        {
+          "category": "Sommer",
+          "url": "https://www.chefkoch.de/rs/s0g55/Sommer-Rezepte.html",
+          "items": null
+        },
+        {
+          "category": "Weihnachten",
+          "url": "https://www.chefkoch.de/rs/s0g59/Weihnachtsrezepte.html",
+          "items": null
+        },
+        {
+          "category": "Winter",
+          "url": "https://www.chefkoch.de/rs/s0g57/Winter-Rezepte.html",
+          "items": null
+        }
+      ]
+    },
+    {
+      "category": "Spezielles",
+      "url": "https://www.chefkoch.de/rs/s0g32/Speisearten.html",
+      "items": [
+        {
+          "category": "Babynahrung",
+          "url": "https://www.chefkoch.de/rs/s0g43/Babynahrung.html",
+          "items": null
+        },
+        {
+          "category": "Camping",
+          "url": "https://www.chefkoch.de/rs/s0g160/Camping-Rezepte.html",
+          "items": null
+        },
+        {
+          "category": "cross-cooking",
+          "url": "https://www.chefkoch.de/rs/s0g124/Cross-Cooking-Rezepte.html",
+          "items": null
+        },
+        {
+          "category": "Ern\u00e4hrungskonzepte",
+          "url": "https://www.chefkoch.de/rs/s0g35/Ern\u00e4hrungskonzepte-Rezepte.html",
+          "items": [
+            {
+              "category": "Diabetiker",
+              "url": "https://www.chefkoch.de/rs/s0g41/Diabetiker-Rezepte.html",
+              "items": null
+            },
+            {
+              "category": "Fettarm",
+              "url": "https://www.chefkoch.de/rs/s0g36/fettarme-Rezepte.html",
+              "items": null
+            },
+            {
+              "category": "INFORM-Empfehlung",
+              "url": "https://www.chefkoch.de/rs/s0g202/inform-Empfehlung.html",
+              "items": null
+            },
+            {
+              "category": "Kalorienarm",
+              "url": "https://www.chefkoch.de/rs/s0g37/kalorienarme-Rezepte.html",
+              "items": null
+            },
+            {
+              "category": "Low fat 30",
+              "url": "https://www.chefkoch.de/rs/s0g179/Low-fat-30-Rezepte.html",
+              "items": null
+            },
+            {
+              "category": "Trennkost",
+              "url": "https://www.chefkoch.de/rs/s0g38/Trennkost-Rezepte.html",
+              "items": null
+            },
+            {
+              "category": "Vegan",
+              "url": "https://www.chefkoch.de/rs/s0g111/Vegane-Rezepte.html",
+              "items": null
+            },
+            {
+              "category": "Vegetarisch",
+              "url": "https://www.chefkoch.de/rs/s0g39/Vegetarische-Rezepte.html",
+              "items": null
+            },
+            {
+              "category": "Vollwert",
+              "url": "https://www.chefkoch.de/rs/s0g161/Vollwert-Rezepte.html",
+              "items": null
+            }
+          ]
+        },
+        {
+          "category": "Festlich",
+          "url": "https://www.chefkoch.de/rs/s0g42/festliche-Rezepte.html",
+          "items": null
+        },
+        {
+          "category": "Fingerfood",
+          "url": "https://www.chefkoch.de/rs/s0g120/Fingerfood-Rezepte.html",
+          "items": null
+        },
+        {
+          "category": "Geheimrezepte",
+          "url": "https://www.chefkoch.de/rs/s0g158/Geheimrezepte.html",
+          "items": null
+        },
+        {
+          "category": "Kinder",
+          "url": "https://www.chefkoch.de/rs/s0g44/Kinderrezepte.html",
+          "items": null
+        },
+        {
+          "category": "Party",
+          "url": "https://www.chefkoch.de/rs/s0g119/Partyrezepte.html",
+          "items": null
+        },
+        {
+          "category": "Raffiniert & preiswert",
+          "url": "https://www.chefkoch.de/rs/s0g34/raffiniere-preiswerte-Rezepte.html",
+          "items": null
+        },
+        {
+          "category": "Resteverwertung",
+          "url": "https://www.chefkoch.de/rs/s0g46/Resteverwertung.html",
+          "items": null
+        },
+        {
+          "category": "Saucen & Dips",
+          "url": "https://www.chefkoch.de/rs/s0g45/Saucen-Dips-Rezepte.html",
+          "items": null
+        },
+        {
+          "category": "Schnell und einfach",
+          "url": "https://www.chefkoch.de/rs/s0g33/schnelle-einfache-Rezepte.html",
+          "items": null
+        },
+        {
+          "category": "Studentenk\u00fcche",
+          "url": "https://www.chefkoch.de/rs/s0g192/Studentenkueche.html",
+          "items": null
+        },
+        {
+          "category": "Wursten",
+          "url": "https://www.chefkoch.de/rs/s0g194/Wurstrezepte.html",
+          "items": null
+        }
+      ]
+    },
+    {
+      "category": "Zubereitungsarten",
+      "url": "https://www.chefkoch.de/rs/s0g61/Zubereitungsarten.html",
+      "items": [
+        {
+          "category": "Aufstrich",
+          "url": "https://www.chefkoch.de/rs/s0g70/Aufstrich-Rezepte.html",
+          "items": null
+        },
+        {
+          "category": "Backen",
+          "url": "https://www.chefkoch.de/rs/s0g66/Backrezepte.html",
+          "items": null
+        },
+        {
+          "category": "Beilage",
+          "url": "https://www.chefkoch.de/rs/s0g71/Beilagen-Rezepte.html",
+          "items": null
+        },
+        {
+          "category": "Brotspeise",
+          "url": "https://www.chefkoch.de/rs/s0g73/Brotspeisen-Rezepte.html",
+          "items": null
+        },
+        {
+          "category": "Eierspeise",
+          "url": "https://www.chefkoch.de/rs/s0g78/Eierspeisen-Rezepte.html",
+          "items": null
+        },
+        {
+          "category": "Eintopf",
+          "url": "https://www.chefkoch.de/rs/s0g79/Eintoepfe-Rezepte.html",
+          "items": null
+        },
+        {
+          "category": "Fisch",
+          "url": "https://www.chefkoch.de/rs/s0g74/Fisch-Rezepte.html",
+          "items": null
+        },
+        {
+          "category": "Frucht",
+          "url": "https://www.chefkoch.de/rs/s0g75/Fruchtrezepte.html",
+          "items": null
+        },
+        {
+          "category": "Fr\u00fchst\u00fcck",
+          "url": "https://www.chefkoch.de/rs/s0g76/Fruehstuecksrezepte.html",
+          "items": null
+        },
+        {
+          "category": "Gem\u00fcse",
+          "url": "https://www.chefkoch.de/rs/s0g77/Gemuese-Rezepte.html",
+          "items": null
+        },
+        {
+          "category": "Gew\u00fcrze/\u00d6l/Essig/Pasten",
+          "url": "https://www.chefkoch.de/rs/s0g201/Gew\u00fcrzmischungen.html",
+          "items": null
+        },
+        {
+          "category": "Grundrezepte",
+          "url": "https://www.chefkoch.de/rs/s0g121/basis-rezepte.html",
+          "items": null
+        },
+        {
+          "category": "Haltbarmachen",
+          "url": "https://www.chefkoch.de/rs/s0g173/Haltbarmachen-Rezepte.html",
+          "items": null
+        },
+        {
+          "category": "K\u00e4se",
+          "url": "https://www.chefkoch.de/rs/s0g123/Kaese-Rezepte.html",
+          "items": null
+        },
+        {
+          "category": "Krustentier & Muscheln",
+          "url": "https://www.chefkoch.de/rs/s0g80/Meeresfruechte-Muschel-Rezepte.html",
+          "items": null
+        },
+        {
+          "category": "Mehlspeisen",
+          "url": "https://www.chefkoch.de/rs/s0g142/Mehlspeisen-Rezepte.html",
+          "items": null
+        },
+        {
+          "category": "Methoden",
+          "url": "https://www.chefkoch.de/rs/s0g62/Kochmethoden.html",
+          "items": [
+            {
+              "category": "Auflauf",
+              "url": "https://www.chefkoch.de/rs/s0g63/Auflauf-Rezepte.html",
+              "items": null
+            },
+            {
+              "category": "Barbecue & Grill",
+              "url": "https://www.chefkoch.de/rs/s0g67/Grillrezepte.html",
+              "items": null
+            },
+            {
+              "category": "Blanchieren",
+              "url": "https://www.chefkoch.de/rs/s0g65/Blanchier-Rezepte.html",
+              "items": null
+            },
+            {
+              "category": "Braten",
+              "url": "https://www.chefkoch.de/rs/s0g69/Braten-Rezepte.html",
+              "items": null
+            },
+            {
+              "category": "D\u00fcnsten",
+              "url": "https://www.chefkoch.de/rs/s0g64/Duensten-Rezepte.html",
+              "items": null
+            },
+            {
+              "category": "Flambieren",
+              "url": "https://www.chefkoch.de/rs/s0g148/Flambieren-Rezepte.html",
+              "items": null
+            },
+            {
+              "category": "Fondue",
+              "url": "https://www.chefkoch.de/rs/s0g117/Raclette-Fondue-Rezepte.html",
+              "items": null
+            },
+            {
+              "category": "Frittieren",
+              "url": "https://www.chefkoch.de/rs/s0g146/Frittieren-Rezepte.html",
+              "items": null
+            },
+            {
+              "category": "Kochen",
+              "url": "https://www.chefkoch.de/rs/s0g164/Kochrezepte.html",
+              "items": null
+            },
+            {
+              "category": "Marinieren",
+              "url": "https://www.chefkoch.de/rs/s0g150/Marinieren-Rezepte.html",
+              "items": null
+            },
+            {
+              "category": "Mikrowelle",
+              "url": "https://www.chefkoch.de/rs/s0g112/Mikrowellen-Rezepte.html",
+              "items": null
+            },
+            {
+              "category": "Molekulark\u00fcche",
+              "url": "https://www.chefkoch.de/rs/s0g193/Molekularkueche-Rezepte.html",
+              "items": null
+            },
+            {
+              "category": "R\u00f6mertopf",
+              "url": "https://www.chefkoch.de/rs/s0g174/Roemertopf-Rezepte.html",
+              "items": null
+            },
+            {
+              "category": "Schmoren",
+              "url": "https://www.chefkoch.de/rs/s0g68/Schmorrezepte.html",
+              "items": null
+            },
+            {
+              "category": "\u00dcberbacken",
+              "url": "https://www.chefkoch.de/rs/s0g154/Rezepte-zum-Ueberbacken.html",
+              "items": null
+            },
+            {
+              "category": "Wok",
+              "url": "https://www.chefkoch.de/rs/s0g126/Wok-Rezepte.html",
+              "items": null
+            }
+          ]
+        },
+        {
+          "category": "Pasta",
+          "url": "https://www.chefkoch.de/rs/s0g81/Pasta-Rezepte.html",
+          "items": null
+        },
+        {
+          "category": "Saucen",
+          "url": "https://www.chefkoch.de/rs/s0g84/Saucen-Rezepte.html",
+          "items": null
+        },
+        {
+          "category": "Snacks und kleine Gerichte",
+          "url": "https://www.chefkoch.de/rs/s0g83/Snack-Rezepte.html",
+          "items": null
+        }
+      ]
+    }
+  ]
+}
