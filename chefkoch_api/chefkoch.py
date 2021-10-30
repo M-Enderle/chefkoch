@@ -31,26 +31,41 @@ class Recipe:
         self.portions: int = portions
         self.soup: bs4.BeautifulSoup = self.__generate_soup(url)
         self.url = self.soup.find("div", class_="recipe-servings ds-box").find("form")["action"]
+        self.info_dict = json.loads(self.soup.findAll("script", type="application/ld+json")[1].text)
 
-        self.title: str = self.soup.find("article", class_="recipe-header") \
-            .find("div", class_="ds-mb ds-mb-col").find("h1").text
+        self.title: str = self.info_dict["name"]
+        self.author = self.info_dict["author"]["name"]
+        self.keywords = self.info_dict["keywords"]
+        self.date_published = self.info_dict["datePublished"]
+        self.description = self.info_dict["description"]
+        self.image = self.info_dict["image"]
+        self.recipeCategory = self.info_dict["recipeCategory"]
+        self.prep_time = self.info_dict["prepTime"].replace("P0DT0H", "")
 
         try:
-            self.author: str = self.soup.findAll("a", class_="ds-copy-link bi-profile")[1].find("span").text
-        except IndexError:
-            self.author = "Unbekannt"
+            self.rating = self.info_dict["aggregateRating"]["ratingValue"]
+        except KeyError:
+            self.rating = None
 
-        self.prep_time: str = self.soup.find("span", class_="recipe-preptime rds-recipe-meta__badge") \
-            .text.replace("\ue192", "").replace("\n", "").strip()
+        try:
+            self.cook_time = self.info_dict["cookTime"].replace("P0DT0H", "")
+        except KeyError:
+            self.cook_time = None
+
+        try:
+            self.reviews = self.info_dict["reviews"]
+        except KeyError:
+            self.reviews = None
+
+
         self.difficulty: str = self.soup.find("span", class_="recipe-difficulty rds-recipe-meta__badge") \
             .text.replace("\ue202", "").replace("\n", "").strip()
 
         self.ingredients: dict = self.__get_ingredients()
 
         self.steps: list = [x.strip() for x in
-                            self.soup.find("article", class_="ds-box ds-grid-float ds-col-12 ds-col-m-8 "
-                                                             "ds-or-3")
-                                .find("div").text.replace("\n", "").lower().replace("ca.", "circa")
+                            self.info_dict["recipeInstructions"]
+                                .replace("ca.", "circa")
                                 .replace("min.", "mindestens").replace("ggf.", "gegebenfalls")
                                 .replace("o. ä.", "oder ähnlich").replace("o.ä.", "oder ähnliche")
                                 .replace("z.b.", "zum beispiel").replace("u. u.", "unter umständen").replace("u.u.",
@@ -126,9 +141,16 @@ class Recipe:
             return self.steps[self.current_step]
         raise EndOfRecipeError
 
-    def __repr__(self) -> str:
+    def __repr__(self):
+        """ repr """
+        return f"Recipe object '{self.title}'"
+
+    def __str__(self) -> str:
         """ convert to string """
-        return f"Recipe object '{self.title}' created by '{self.author}'"
+        return f"Recipe object '{self.title}' created by user '{self.author}':\n" \
+               f"  preperation time: {self.prep_time}\n" \
+               f"  difficulty: {self.difficulty}\n" \
+               f"  nutritional_values: {self.nutritional_values}"
 
 
 def get_specific(search_term: str, frm: int = 0, to: int = 2, filters: dict = None,
@@ -161,7 +183,7 @@ def get_specific(search_term: str, frm: int = 0, to: int = 2, filters: dict = No
         if "sort" in filters:
             if filters["sort"] == "date":
                 url_addon += "o3"
-            elif filters["sort" == "rating"]:
+            elif filters["sort"] == "rating":
                 url_addon += "o8"
 
         url_addon += "e1n1z1b0i0"
@@ -226,15 +248,19 @@ def get_specifications() -> List[Recipe]:
         return list(json.load(file_in).keys())
 
 
-def get_daily_recommendation(frm: int = 0, to: int = 2, url_addon: str = "koche") -> List[Recipe]:
+def get_daily_recommendations(frm: int = 0, to: int = 2, category: str = "koche") -> List[Recipe]:
     """
     Returns daily recommendation
-    :param frm:
-    :param to:
-    :param url_addon: default: koche, possible values: koche, backe
-    :return:
+    :param frm: first recipe to retrieve
+    :param to: last recipe to retrieve
+    :param category: default: koche, possible values: koche, backe
+    :return: list of all recipes retrieved
     """
-    r = requests.get(base_url + f"/rezepte/was-{url_addon}-ich-heute/")
+
+    if category not in ["koche", "backe"]:
+        raise CategoryNotFoundError
+
+    r = requests.get(base_url + f"/rezepte/was-{category}-ich-heute/")
     soup = bs4.BeautifulSoup(r.text, features='html.parser')
 
     articles = soup.findAll("div", class_="inspiration__entry")[frm:to + 1]
