@@ -1,13 +1,15 @@
 import threading
-
 import requests
 import bs4
 import json
+
+from typing import List
 
 base_url = "https://www.chefkoch.de"
 
 
 class CategoryNotFoundError(Exception):
+    """ Thrown when a category is not valid """
     pass
 
 
@@ -22,8 +24,8 @@ class Recipe:
         """
 
         self.portions: int = portions
-        self.url: str = url
-        self.soup: bs4.BeautifulSoup = self.__generate_soup()
+        self.soup: bs4.BeautifulSoup = self.__generate_soup(url)
+        self.url = self.soup.find("div", class_="recipe-servings ds-box").find("form")["action"]
 
         self.title: str = self.soup.find("article", class_="recipe-header") \
             .find("div", class_="ds-mb ds-mb-col").find("h1").text
@@ -55,7 +57,8 @@ class Recipe:
         self.nutritional_values: dict = self.__get_nutritions()
 
     @staticmethod
-    def generate(url: str, callback: list):
+    def generate(url: str, callback: list) -> None:
+        """ Generates a Recipe object and appends it to the list callback. Used for threads. """
         recipe = Recipe(url)
         callback.append(recipe)
 
@@ -70,9 +73,11 @@ class Recipe:
         self.ingredients = self.__get_ingredients()
         return self.ingredients
 
-    def __generate_soup(self) -> bs4.BeautifulSoup:
+    def __generate_soup(self, url: str = None) -> bs4.BeautifulSoup:
         """ Generate new soup """
-        r = requests.get(self.url + f"?portionen={self.portions}")
+        if url is None:
+            url = self.url
+        r = requests.get(url + f"?portionen={self.portions}")
         return bs4.BeautifulSoup(r.text, features="html.parser")
 
     def __get_ingredients(self) -> dict:
@@ -208,7 +213,7 @@ def get_specific(search_term: str, frm: int = 0, to: int = 2, filters: dict = No
     return recipes
 
 
-def get_specifications() -> list:
+def get_specifications() -> List[Recipe]:
     """
     :return: A list of all possible specifications
     """
@@ -216,7 +221,7 @@ def get_specifications() -> list:
         return list(json.load(file_in).keys())
 
 
-def get_daily_recommendation(frm: int = 0, to: int = 2, url_addon: str = "koche") -> list:
+def get_daily_recommendation(frm: int = 0, to: int = 2, url_addon: str = "koche") -> List[Recipe]:
     """
     Returns daily recommendation
     :param frm:
@@ -244,9 +249,5 @@ def get_categories() -> dict:
         return json.load(f)
 
 
-def get_random_recipe():
-    # TODO
-    pass
-
-
-print(get_specific("Lasagne", frm=0, to=30))
+def get_random_recipe() -> Recipe:
+    return Recipe("https://www.chefkoch.de/rezepte/zufallsrezept/")
