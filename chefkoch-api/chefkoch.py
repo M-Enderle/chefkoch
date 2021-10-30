@@ -13,6 +13,11 @@ class CategoryNotFoundError(Exception):
     pass
 
 
+class EndOfRecipeError(Exception):
+    """ Raised when the end of the steps has been reached """
+    pass
+
+
 class Recipe:
     """ Class to save all information for a recipe """
 
@@ -55,6 +60,8 @@ class Recipe:
                                 .split(".") if x]
 
         self.nutritional_values: dict = self.__get_nutritions()
+
+        self.current_step = -1
 
     @staticmethod
     def generate(url: str, callback: list) -> None:
@@ -113,17 +120,15 @@ class Recipe:
 
         return nutritional_values
 
+    def get_next_step(self):
+        self.current_step += 1
+        if self.current_step < len(self.steps):
+            return self.steps[self.current_step]
+        raise EndOfRecipeError
+
     def __repr__(self) -> str:
         """ convert to string """
         return f"Recipe object '{self.title}' created by '{self.author}'"
-
-
-def print_dict(my_dict: dict) -> None:
-    """
-    Beauty print a dict
-    :param my_dict: dict to print
-    """
-    print(json.dumps(my_dict, sort_keys=True, indent=4, ensure_ascii=False))
 
 
 def get_specific(search_term: str, frm: int = 0, to: int = 2, filters: dict = None,
@@ -182,7 +187,7 @@ def get_specific(search_term: str, frm: int = 0, to: int = 2, filters: dict = No
 
         url_addon += "t"
 
-        with open("specifications.json", "r", encoding="utf-8") as file_in:
+        with open("../src/specifications.json", "r", encoding="utf-8") as file_in:
             category_dict = json.load(file_in)
 
         for specification in specifications:
@@ -217,7 +222,7 @@ def get_specifications() -> List[Recipe]:
     """
     :return: A list of all possible specifications
     """
-    with open("specifications.json", "r", encoding="utf-8") as file_in:
+    with open("../src/specifications.json", "r", encoding="utf-8") as file_in:
         return list(json.load(file_in).keys())
 
 
@@ -245,7 +250,7 @@ def get_daily_recommendation(frm: int = 0, to: int = 2, url_addon: str = "koche"
 
 def get_categories() -> dict:
     """ :return: dictionary with a hirachy of all categories """
-    with open("categories.json", "r", encoding="utf-8") as f:
+    with open("../src/categories.json", "r", encoding="utf-8") as f:
         return json.load(f)
 
 
