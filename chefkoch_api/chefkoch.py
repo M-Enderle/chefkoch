@@ -57,7 +57,6 @@ class Recipe:
         except KeyError:
             self.reviews = None
 
-
         self.difficulty: str = self.soup.find("span", class_="recipe-difficulty rds-recipe-meta__badge") \
             .text.replace("\ue202", "").replace("\n", "").strip()
 
@@ -66,12 +65,16 @@ class Recipe:
         self.steps: list = [x.strip() for x in
                             self.info_dict["recipeInstructions"]
                                 .replace("ca.", "circa")
-                                .replace("min.", "mindestens").replace("ggf.", "gegebenfalls")
-                                .replace("o. ä.", "oder ähnlich").replace("o.ä.", "oder ähnliche")
-                                .replace("z.b.", "zum beispiel").replace("u. u.", "unter umständen").replace("u.u.",
-                                                                                                             "unter umständen")
-                                .replace("tk", "tiefkühl").replace("z. b.", "zum beispiel").replace("usw.",
-                                                                                                    "und so weiter")
+                                .replace("min.", "mindestens")
+                                .replace("ggf.", "gegebenfalls")
+                                .replace("o. ä.", "oder ähnlich")
+                                .replace("o.ä.", "oder ähnliche")
+                                .replace("z.b.", "zum beispiel")
+                                .replace("u. u.", "unter umständen")
+                                .replace("u.u.", "unter umständen")
+                                .replace("tk", "tiefkühl")
+                                .replace("z. b.", "zum beispiel")
+                                .replace("usw.", "und so weiter")
                                 .split(".") if x]
 
         self.nutritional_values: dict = self.__get_nutritions()
@@ -79,10 +82,19 @@ class Recipe:
         self.current_step = -1
 
     @staticmethod
-    def generate(url: str, callback: list) -> None:
-        """ Generates a Recipe object and appends it to the list callback. Used for threads. """
-        recipe = Recipe(url)
-        callback.append(recipe)
+    def generate_multiple(urls: list, callback_list: list) -> None:
+        """ Generates recipe objects for each url in list and appends it to the list callback. """
+
+        def generate_to_list(_url, _callback_list):
+            _callback_list.append(Recipe(_url))
+
+        threads = []
+        for url in urls:
+            threads.append(threading.Thread(target=generate_to_list, args=(url, callback_list)))
+            threads[-1].start()
+
+        for thread in threads:
+            thread.join()
 
     def modify_portions(self, portions: int) -> dict:
         """
@@ -125,7 +137,8 @@ class Recipe:
         nutritional_values = dict()
         try:
             nutritional_contents = [x.strip() for x in self.soup.find("div",
-                                                                      class_="recipe-nutrition_content ds-box ds-grid").text.strip().split(
+                                                                      class_="recipe-nutrition_content ds-box ds-grid")
+                .text.strip().split(
                 "\n") if x.strip()]
             for i in range(0, len(nutritional_contents), 2):
                 nutritional_values[nutritional_contents[i]] = nutritional_contents[i + 1]
@@ -227,15 +240,7 @@ def get_specific(search_term: str, frm: int = 0, to: int = 2, filters: dict = No
         return _article.find('a')[_attr_name]
 
     recipes = list()
-
-    threads = []
-    for article in articles:
-        threads.append(threading.Thread(target=Recipe.generate,
-                                        args=(get_attr(article, "href"), recipes)))
-        threads[-1].start()
-
-    for thread in threads:
-        thread.join()
+    Recipe.generate_multiple([get_attr(article, "href") for article in articles], recipes)
 
     return recipes
 
@@ -250,9 +255,9 @@ def get_specifications() -> List[Recipe]:
 
 def get_daily_recommendations(frm: int = 0, to: int = 2, category: str = "koche") -> List[Recipe]:
     """
-    Returns daily recommendation
+    Returns daily recommendations as a list of recipes.
     :param frm: first recipe to retrieve
-    :param to: last recipe to retrieve
+    :param to: last recipe to retrieve -> max 8
     :param category: default: koche, possible values: koche, backe
     :return: list of all recipes retrieved
     """
@@ -263,13 +268,15 @@ def get_daily_recommendations(frm: int = 0, to: int = 2, category: str = "koche"
     r = requests.get(base_url + f"/rezepte/was-{category}-ich-heute/")
     soup = bs4.BeautifulSoup(r.text, features='html.parser')
 
-    articles = soup.findAll("div", class_="inspiration__entry")[frm:to + 1]
+    article_divs = soup.findAll("div", class_="inspiration__entry")[frm:to+1]
+
+    articles = list()
+    for article_div in article_divs:
+        if article_div.find("a", class_="card__link"):
+            articles.append(article_div.find("a", class_="card__link")["href"])
 
     recipes = list()
-
-    for article in articles:
-        article = article.find("a", class_="card__link")
-        recipes.append(Recipe(article["href"]))
+    Recipe.generate_multiple(articles, recipes)
 
     return recipes
 
