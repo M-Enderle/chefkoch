@@ -166,8 +166,7 @@ class Recipe:
                f"  nutritional_values: {self.nutritional_values}"
 
 
-def get_specific(search_term: str, frm: int = 0, to: int = 2, filters: dict = None,
-                 specifications: list = None) -> list:
+def search(search_term: str, frm: int = 0, to: int = 2, filters: dict = None, specifications: list = None) -> list:
     """
     Search for a specific term optionally with categories and filters enabled.
     :param search_term: what to search for
