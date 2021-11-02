@@ -1,19 +1,19 @@
-# chefkoch_api
-[![Downloads](https://pepy.tech/badge/chefkoch_api)](https://pepy.tech/project/chefkoch_api)
+# python_chefkoch
+[![Downloads](https://pepy.tech/badge/python-chefkoch)](https://pepy.tech/project/python-chefkoch)
 
 Python library to retrieve data from chefkoch.de
 
 ## Installation
-Use the package manager [pip](https://pypi.org/) to install [chefkoch_api](https://pypi.org/project/chefkoch_api/)
+Use the package manager [pip](https://pypi.org/) to install [python-chefkoch](https://pypi.org/project/python-chefkoch/)
 ```
-pip install chefkoch_api
+pip install python-chefkoch
 ```
 
 ## Examples:
 
 #### Retrieving daily recommendations
 ```python
-from chefkoch_api import chefkoch
+from python_chefkoch import chefkoch
 
 recipes = chefkoch.get_daily_recommendations(category="backe")
 
@@ -23,7 +23,7 @@ for recipe in recipes:
 
 #### Retrieving a random recipe
 ```python
-from chefkoch_api import chefkoch
+from python_chefkoch import chefkoch
 
 recipe = chefkoch.get_random_recipe()
 print(recipe.modify_portions(portions=6))
@@ -34,7 +34,7 @@ for step in recipe.steps:
 
 #### Searching for a specific recipe with filter
 ```python
-from chefkoch_api import chefkoch
+from python_chefkoch import chefkoch
 
 print(chefkoch.get_specifications())
 recipes = chefkoch.search(search_term="Lasagne",
