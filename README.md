@@ -1,12 +1,11 @@
-# python_chefkoch
-[![Downloads](https://pepy.tech/badge/python-chefkoch)](https://pepy.tech/project/python-chefkoch)
+# chefkoch_api
 
 Python library to retrieve data from chefkoch.de
 
 ## Installation
-Use the package manager [pip](https://pypi.org/) to install [python-chefkoch](https://pypi.org/project/python-chefkoch/)
+Use the package manager [pip](https://pypi.org/) to install [python_chefkoch](https://pypi.org/project/python_chefkoch/)
 ```
-pip install python-chefkoch
+pip install python_chefkoch
 ```
 
 ## Examples:
