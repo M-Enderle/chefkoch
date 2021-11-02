@@ -1,5 +1,5 @@
 # python_chefkoch
-[![Downloads](https://pepy.tech/badge/python_chefkoch)](https://pepy.tech/project/python_chefkoch)
+[![Downloads](https://pepy.tech/badge/python-chefkoch)](https://pepy.tech/project/python-chefkoch)
 
 Python library to retrieve data from chefkoch.de
 
