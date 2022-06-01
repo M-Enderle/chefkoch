@@ -58,3 +58,7 @@ print(recipes)
 
 ## Contributing
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
+
+## Participants
+[Florian Eder](https://github.com/FlorianEder),
+[Moritz Enderle](https://github.com/THDMoritzEnderle)
