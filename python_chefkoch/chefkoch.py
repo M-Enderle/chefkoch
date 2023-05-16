@@ -30,7 +30,7 @@ class Recipe:
 
         self.portions: int = portions
         self.soup: bs4.BeautifulSoup = self.__generate_soup(url)
-        self.url = self.soup.find("div", class_="recipe-servings ds-box").find("form")["action"]
+        self.url = self.soup.find("div", class_="recipe-servings ds-box").find("form")["action"].split("?")[0] #get portions right
         self.info_dict = json.loads(self.soup.findAll("script", type="application/ld+json")[1].text)
 
         self.title: str = self.info_dict["name"]
@@ -66,6 +66,7 @@ class Recipe:
                             self.info_dict["recipeInstructions"]
                                 .replace("ca.", "circa")
                                 .replace("min.", "mindestens")
+                                .replace("mind.", "mindestens")
                                 .replace("ggf.", "gegebenfalls")
                                 .replace("o. ä.", "oder ähnlich")
                                 .replace("o.ä.", "oder ähnliche")
@@ -120,13 +121,19 @@ class Recipe:
         :return: Dict with ingredients
         """
         ingredients = dict()
-        for ingredient in self.soup.find("table", class_="ingredients table-header").find("tbody").findAll("tr"):
-            ingredient_name = ingredient.findAll("td")[1].find("span").text
+        for table in self.soup.findAll("table", class_="ingredients table-header"):
             try:
-                ingredients[ingredient_name] = ingredient.findAll("td")[0].find("span").text \
-                    .replace("\n", "").replace(" ", "")
-            except AttributeError:
-                ingredients[ingredient_name] = "etwas"
+                header = table.find("thead").find("th").text.replace("\n", "")
+                ingredients[header] = "==="
+            except:
+                pass
+            for ingredient in table.find("tbody").findAll("tr"):
+                ingredient_name = ingredient.findAll("td")[1].find("span").text
+                try:
+                    ingredients[ingredient_name] = ingredient.findAll("td")[0].find("span").text \
+                        .replace("\n", "").replace(" ", "")
+                except AttributeError:
+                    ingredients[ingredient_name] = "etwas"
         return ingredients
 
     def __get_nutritions(self) -> dict:
@@ -220,9 +227,17 @@ def search(search_term: str, frm: int = 0, to: int = 2, filters: dict = None, sp
     if specifications:
 
         url_addon += "t"
-
-        with open("../src/specifications.json", "r", encoding="utf-8") as file_in:
-            category_dict = json.load(file_in)
+        files = ["../src/specifications.json","./src/specifications.json"]
+        category_dict = None
+        for file in files:
+            try:
+                with open(file, "r", encoding="utf-8") as file_in:
+                    category_dict = json.load(file_in)
+                    break
+            except Exception:
+                pass
+        if category_dict is None:
+            print("File /src/specifications.json not found")
 
         for specification in specifications:
             if specification.lower() not in category_dict:
@@ -248,8 +263,15 @@ def get_specifications() -> List[Recipe]:
     """
     :return: A list of all possible specifications
     """
-    with open("../src/specifications.json", "r", encoding="utf-8") as file_in:
-        return list(json.load(file_in).keys())
+    files = ["../src/specifications.json","./src/specifications.json"]
+    for file in files:
+        try:
+            with open(file, "r", encoding="utf-8") as file_in:
+                return list(json.load(file_in).keys())
+        except Exception as e:
+            pass
+    print("File /src/specifications.json not found")
+    return None
 
 
 def get_daily_recommendations(frm: int = 0, to: int = 2, category: str = "koche") -> List[Recipe]:
@@ -282,9 +304,15 @@ def get_daily_recommendations(frm: int = 0, to: int = 2, category: str = "koche"
 
 def get_categories() -> dict:
     """ :return: dictionary with a hirachy of all categories """
-    with open("../src/categories.json", "r", encoding="utf-8") as f:
-        return json.load(f)
-
+    files = ["../src/categories.json","./src/categories.json"]
+    for file in files:
+        try:
+            with open(file, "r", encoding="utf-8") as file_in:
+                return json.load(file_in)
+        except Exception:
+            pass
+    print("File /src/specifications.json not found")
+    return None
 
 def get_random_recipe() -> Recipe:
     return Recipe("https://www.chefkoch.de/rezepte/zufallsrezept/")
