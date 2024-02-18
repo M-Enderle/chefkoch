@@ -289,12 +289,12 @@ def get_daily_recommendations(frm: int = 0, to: int = 2, category: str = "koche"
     r = requests.get(base_url + f"/rezepte/was-{category}-ich-heute/")
     soup = bs4.BeautifulSoup(r.text, features='html.parser')
 
-    article_divs = soup.findAll("div", class_="inspiration__entry")[frm:to+1]
+    article_divs = soup.findAll("div", class_="ds-recipe-card")[frm:to+1]
 
     articles = list()
     for article_div in article_divs:
-        if article_div.find("a", class_="card__link"):
-            articles.append(article_div.find("a", class_="card__link")["href"])
+        if article_div.find("a", class_="ds-recipe-card__link"):
+            articles.append(article_div.find("a", class_="ds-recipe-card__link")["href"])
 
     recipes = list()
     Recipe.generate_multiple(articles, recipes)
