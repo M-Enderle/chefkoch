@@ -1,64 +1,88 @@
-# python_chefkoch
-[![Downloads](https://pepy.tech/badge/python-chefkoch)](https://pepy.tech/project/python-chefkoch)
+# python-chefkoch
 
-Python library to retrieve data from chefkoch.de
+[![Downloads](https://static.pepy.tech/badge/python-chefkoch)](https://pepy.tech/project/python-chefkoch)
+[![PyPI version](https://badge.fury.io/py/python-chefkoch.svg)](https://badge.fury.io/py/python-chefkoch)
 
-## Installation
-Use the package manager [pip](https://pypi.org/) to install [python_chefkoch](https://pypi.org/project/python_chefkoch/)
+A simple Python retrieval tool for recipes from chefkoch.de
+
+## 🐍 Installation
+
+```bash
+$ pip install python-chefkoch
 ```
-pip install python_chefkoch
-```
 
-## Examples:
+## 🚀 Quickstart
 
-#### Retrieving daily recommendations
 ```python
-from python_chefkoch import chefkoch
+from chefkoch import Recipe
 
-recipes = chefkoch.get_daily_recommendations(category="backe")
-
-for recipe in recipes:
-    print("\n" + str(recipe))
+recipe = Recipe('https://www.chefkoch.de/rezepte/745721177147257/Lasagne.html')
+print(recipe.title)
 ```
 
-#### Retrieving a random recipe
+## 🍽️ Recipe attributes
+
+| Attribute          | Type                   | Description                                      |
+|--------------------|------------------------|--------------------------------------------------|
+| title              | str                    | The title of the recipe.                         |
+| image_url          | str                    | The URL of the recipe's image.                    |
+| image_base64       | bytes                  | The base64-encoded content of the recipe's image. |
+| image_urls         | List[str]              | The URLs of all images associated with the recipe. |
+| date_published     | datetime.datetime      | The date when the recipe was published.           |
+| prep_time          | isodate.Duration       | The preparation time of the recipe.               |
+| cookTime           | isodate.Duration       | The cooking time of the recipe.                   |
+| totalTime          | isodate.Duration       | The total time required to prepare the recipe.    |
+| difficulty         | str                    | The difficulty level of the recipe.               |
+| ingredients        | List[str]              | The list of ingredients required for the recipe.  |
+| instructions       | List[str]              | The list of instructions to prepare the recipe.   |
+| publisher          | str                    | The name of the publisher of the recipe.          |
+| calories           | str                    | The number of calories in the recipe.             |
+| keywords           | str                    | The keywords associated with the recipe.          |
+| number_reviews     | int                    | The number of reviews for the recipe.             |
+| number_ratings     | int                    | The number of ratings for the recipe.             |
+| rating             | float                  | The average rating of the recipe.                 |
+| category           | str                    | The category of the recipe.                       |
+
+## 🕵️ Retrivers
+
+### RandomRetriever
+
+Retrieves a random recipe from chefkoch.de.
+
 ```python
-from python_chefkoch import chefkoch
+from chefkoch import RandomRetriever
 
-recipe = chefkoch.get_random_recipe()
-print(recipe.modify_portions(portions=6))
-
-for step in recipe.steps:
-    print("Next -> " + step)
+retriever = RandomRetriever()
+recipe = retriever.get_recipe()
 ```
 
-#### Searching for a specific recipe with filter
+### DailyRecommendationRetriever
+
+Retrieves the daily recommendation from chefkoch.de.
+
 ```python
-from python_chefkoch import chefkoch
+from chefkoch import DailyRecommendationRetriever
 
-print(chefkoch.get_specifications())
-recipes = chefkoch.search(search_term="Lasagne",
-                          filters={"page": 2, "sort": "rating", "duration": 30,
-                                            "difficulty": {"easy": True, "medium": True, "hard": False}},
-                          specifications=["vegetarisch", "gemuese"])
-print(recipes)
+retriever = DailyRecommendationRetriever()
+recipes = retriever.get_recipes()
 ```
 
-## Recipe interactions
+### SearchRetriever
 
-|name               |type      |description                                                                         |
-|-------------------|----------|------------------------------------------------------------------------------------|
-|get_next_step      |method    |returns the next step of the recipe. Throws EndOfRecipeError when the end is reached|
-|modify_portions    |method    |modifies the portions and returns the new dict for ingredients                      |
-|info_dict          |attribute |contains all information retrived directly from javascript from the chefkoch page   |
-|ingredients        |attribute |dictionary with ingredients as key and the amount as values. Everything is a string |
-|steps              |attribute |list with all steps. Simply the instruction text split by '.'                       |
-|image              |attribute |hyper-link to the main image                                                        |
-|...                |attributes|more attributes available that are self-explainatory                                |
+Allows the use of a search query to retrieve recipes from chefkoch.de.
 
-## Contributing
-Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
+```python
+from chefkoch import SearchRetriever
 
-## Participants
-[Florian Eder](https://github.com/FlorianEder),
-[Moritz Enderle](https://github.com/THDMoritzEnderle)
+print(SearchRetriever.HEALTH)
+retriever = SearchRetriever(health=["Vegan"])
+recipes = retriever.get_recipes()
+```
+
+## 💁 Contributing
+
+As an open-source initiative in a rapidly evolving domain, I welcome contributions, be it through the addition of new features or the improvement of existing ones. If you have any suggestions, bug reports, or annoyances, please report them to the issue tracker.
+
+## 📃 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.

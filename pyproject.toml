@@ -1,0 +1,42 @@
+[tool.poetry]
+name = "python-chefkoch"
+version = "2.0.0-alpha.2"
+description = "Python library to retrieve information from chefkoch.de"
+authors = ["Moritz Enderle <contact@moritzenderle.com>"]
+license = "MIT"
+readme = "README.md"
+packages = [{include = "chefkoch", from="src"}]
+
+[tool.poetry.dependencies]
+python = "^3.8"
+requests = "^2.31.0"
+beautifulsoup4 = "^4.12.3"
+isodate = "^0.6.1"
+
+[tool.poetry.group.dev.dependencies]
+black = "^24.2.0"
+isort = "^5.13.2"
+mypy = "^1.8.0"
+types-requests = "^2.31.0.20240218"
+types-beautifulsoup4 = "^4.12.0.20240229"
+ipykernel = "^6.29.3"
+pytest = "^8.0.2"
+pyyaml = "^6.0.1"
+lark = "^1.1.9"
+pytest-cov = "^4.1.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[too.isort]
+profile = "black"
+
+[tool.mypy]
+warn_unused_configs = true
+warn_return_any = true
+warn_unused_ignores = true
+
+[tool.black]
+target-version = ['py38']
+line-length = 90
