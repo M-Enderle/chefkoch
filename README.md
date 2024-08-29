@@ -14,7 +14,7 @@ $ pip install python-chefkoch
 ## 🚀 Quickstart
 
 ```python
-from chefkoch import Recipe
+from chefkoch.recipe import Recipe
 
 recipe = Recipe('https://www.chefkoch.de/rezepte/745721177147257/Lasagne.html')
 print(recipe.title)
@@ -50,20 +50,20 @@ print(recipe.title)
 Retrieves a random recipe from chefkoch.de.
 
 ```python
-from chefkoch import RandomRetriever
+from chefkoch.retrievers import RandomRetriever
 
 retriever = RandomRetriever()
 recipe = retriever.get_recipe()
 ```
 
-### DailyRecommendationRetriever
+### DailyRecipeRetriever
 
 Retrieves the daily recommendation from chefkoch.de.
 
 ```python
-from chefkoch import DailyRecommendationRetriever
+from chefkoch.retrievers import DailyRecipeRetriever
 
-retriever = DailyRecommendationRetriever()
+retriever = DailyRecipeRetriever()
 recipes = retriever.get_recipes()
 ```
 
@@ -72,7 +72,7 @@ recipes = retriever.get_recipes()
 Allows the use of a search query to retrieve recipes from chefkoch.de.
 
 ```python
-from chefkoch import SearchRetriever
+from chefkoch.retrievers import SearchRetriever
 
 print(SearchRetriever.HEALTH)
 retriever = SearchRetriever(health=["Vegan"])
