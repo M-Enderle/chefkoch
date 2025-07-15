@@ -295,5 +295,5 @@ class Recipe:
 
 
 if __name__ == "__main__":
-    recipe = Recipe(url="https://www.chefkoch.de/rezepte/zufallsrezept/")
-    print(recipe.difficulty)
+    recipe = Recipe(url="https://www.chefkoch.de/rezepte/3163161470836947")
+    print(recipe.image_base64)

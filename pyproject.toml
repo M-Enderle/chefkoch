@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "python-chefkoch"
-version = "2.0.0-alpha.2"
+version = "2.1.0"
 description = "Python library to retrieve information from chefkoch.de"
 authors = ["Moritz Enderle <contact@moritzenderle.com>"]
 license = "MIT"
@@ -40,3 +40,7 @@ warn_unused_ignores = true
 [tool.black]
 target-version = ['py38']
 line-length = 90
+
+[tool.poetry-auto-export]
+output = "requirements.txt"
+without_hashes = true
