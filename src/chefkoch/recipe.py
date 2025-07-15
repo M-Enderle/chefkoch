@@ -234,6 +234,22 @@ class Recipe:
         return self.__info_dict.get("publisher", {}).get("name", "")
 
     @cached_property
+    def author(self):
+        """
+        Returns the name of the author of the recipe.
+
+        Returns:
+            str: The name of the author of the recipe.
+        """
+        author = self.__info_dict.get("author", {})
+        if isinstance(author, dict):
+            return author.get("name", "")
+        elif isinstance(author, list) and author:
+            # Sometimes 'author' can be a list of dicts
+            return author[0].get("name", "")
+        return ""
+
+    @cached_property
     def calories(self):
         """
         Returns the number of calories in the recipe.
@@ -296,4 +312,3 @@ class Recipe:
 
 if __name__ == "__main__":
     recipe = Recipe(url="https://www.chefkoch.de/rezepte/3163161470836947")
-    print(recipe.image_base64)
