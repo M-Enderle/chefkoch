@@ -17,6 +17,12 @@ class RandomRetriever:
     A class that retrieves random recipes from a source.
     """
 
+    def __init__(self):
+        """
+        Initializes a RandomRetriever with a requests session for connection reuse.
+        """
+        self.session = requests.Session()
+
     def get_recipes(self, n: int = 1) -> Recipe:
         """
         Retrieves a specified number of random recipes.
@@ -36,7 +42,13 @@ class RandomRetriever:
         Returns:
             Recipe: The retrieved recipe.
         """
-        return Recipe(url=requests.get(RANDOM_RECIPE_URL).url)
+        return Recipe(url=self.session.get(RANDOM_RECIPE_URL).url)
+
+    def close(self):
+        """
+        Closes the session and all adapters.
+        """
+        self.session.close()
 
 
 class SearchRetriever:
@@ -227,6 +239,8 @@ class SearchRetriever:
         Raises:
             ValueError: If any of the provided filter options are invalid.
         """
+        # Initialize requests session for connection reuse
+        self.session = requests.Session()
 
         self._properties = [prop.capitalize() for prop in properties]
         self._health = [health.capitalize() for health in health]
@@ -350,12 +364,18 @@ class SearchRetriever:
 
         url = f"https://www.chefkoch.de/rs/s{page-1}{combined_string}p{prep_time}r{rating}o{sort}/{search_query}/Rezepte.html"
 
-        result = requests.get(url).text
+        result = self.session.get(url).text
         soup = bs4.BeautifulSoup(result, "html.parser")
 
         recipe_cards = soup.find_all("div", {"class": "ds-recipe-card"})
         recipe_links = [card.find("a") for card in recipe_cards]
         return [Recipe(url=link["href"]) for link in recipe_links]
+
+    def close(self):
+        """
+        Closes the session and all adapters.
+        """
+        self.session.close()
 
 
 class DailyRecipeRetriever:
@@ -369,6 +389,12 @@ class DailyRecipeRetriever:
         get_recipes(type: str) -> List[Recipe]: Retrieves daily recipes based on the specified type.
 
     """
+
+    def __init__(self):
+        """
+        Initializes a DailyRecipeRetriever with a requests session for connection reuse.
+        """
+        self.session = requests.Session()
 
     def get_recipes(self, type: str) -> List[Recipe]:
         """
@@ -391,7 +417,7 @@ class DailyRecipeRetriever:
         else:
             raise ValueError("Invalid type. Must be 'kochen' or 'backen'")
 
-        response = requests.get(url)
+        response = self.session.get(url)
         soup = bs4.BeautifulSoup(response.text, "html.parser")
         recipe_links = soup.find_all("a", {"class": "ds-recipe-card__link"})
         recipe_links = [
@@ -400,3 +426,9 @@ class DailyRecipeRetriever:
             if link["href"].startswith("https://www.chefkoch.de/rezept")
         ]
         return [Recipe(url=link["href"]) for link in recipe_links]
+
+    def close(self):
+        """
+        Closes the session and all adapters.
+        """
+        self.session.close()
