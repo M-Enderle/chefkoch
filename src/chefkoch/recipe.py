@@ -3,7 +3,7 @@
 import datetime
 import json
 from functools import cached_property
-from typing import List, Optional
+from typing import List, Optional, Dict, Any, Union
 
 import isodate
 import requests
@@ -15,30 +15,7 @@ BASE_URL = "https://www.chefkoch.de/rezepte"
 class Recipe:
     """
     Represents a recipe from Chefkoch website.
-
-    Attributes:
-        url (str): The URL of the recipe.
-        id (str): The ID of the recipe.
-
-    Properties:
-        title (str): The title of the recipe.
-        image_url (str): The URL of the recipe's image.
-        image_base64 (bytes): The base64-encoded content of the recipe's image.
-        image_urls (List[str]): The URLs of all images associated with the recipe.
-        date_published (datetime.datetime): The date when the recipe was published.
-        prep_time (isodate.Duration): The preparation time of the recipe.
-        cookTime (isodate.Duration): The cooking time of the recipe.
-        totalTime (isodate.Duration): The total time required to prepare the recipe.
-        difficulty (str): The difficulty level of the recipe.
-        ingredients (List[str]): The list of ingredients required for the recipe.
-        instructions (List[str]): The list of instructions to prepare the recipe.
-        publisher (str): The name of the publisher of the recipe.
-        calories (str): The number of calories in the recipe.
-        keywords (str): The keywords associated with the recipe.
-        number_reviews (int): The number of reviews for the recipe.
-        number_ratings (int): The number of ratings for the recipe.
-        rating (float): The average rating of the recipe.
-        category (str): The category of the recipe.
+    This class scrapes recipe data from a given Chefkoch URL.
     """
 
     def __init__(self, url: Optional[str] = None, id: Optional[str] = None):
@@ -53,262 +30,210 @@ class Recipe:
             ValueError: If neither url nor id is provided.
             ValueError: If the url is invalid.
         """
-
         if url is None and id is None:
             raise ValueError("Either url or id must be provided")
 
         if id is not None:
             url = f"{BASE_URL}/{id}"
 
-        if not BASE_URL in url:
+        if not url.startswith(BASE_URL.rsplit('/', 1)[0]):
             raise ValueError("Invalid url")
 
         if id is None:
+            # Extract ID from URL, works for both old and new URL formats
             id = url.split("/")[4]
 
         self.url: str = url
         self.id: str = id
 
     @cached_property
-    def __info_dict(self):
-        """
-        Returns the information dictionary of the recipe.
-
-        Returns:
-            dict: The information dictionary of the recipe.
-        """
-        info_dict_str = self.__soup.findAll("script", type="application/ld+json")[1].text
-        info_dict_str = info_dict_str.encode("utf-8").decode("utf-8")
-        return json.loads(info_dict_str)
-
-    @cached_property
     def __soup(self) -> BeautifulSoup:
         """
-        Returns the BeautifulSoup object of the recipe's webpage.
-
-        Returns:
-            BeautifulSoup: The BeautifulSoup object of the recipe's webpage.
+        Fetches and parses the HTML content of the recipe URL.
+        Returns a BeautifulSoup object.
         """
-        response = requests.get(self.url)
-        return BeautifulSoup(response.content, "html.parser")
+        try:
+            response = requests.get(self.url, timeout=10)
+            response.raise_for_status()
+            return BeautifulSoup(response.content, "html.parser")
+        except requests.exceptions.RequestException as e:
+            print(f"Error fetching recipe page: {e}")
+            return BeautifulSoup("", "html.parser")
 
     @cached_property
-    def title(self) -> str:
+    def __info_dict(self) -> Dict[str, Any]:
         """
-        Returns the title of the recipe.
-
-        Returns:
-            str: The title of the recipe.
-
-        Raises:
-            ValueError: If the title is not found.
+        Finds and parses the JSON-LD script tag containing recipe information.
+        Returns the parsed dictionary.
         """
-        text: str = self.__soup.find("h1").text
-        if text:
-            return text
-        raise ValueError("Title not found")
+        try:
+            scripts = self.__soup.findAll("script", type="application/ld+json")
+            # The second JSON-LD script usually contains the recipe details.
+            if len(scripts) > 1:
+                info_dict_str = scripts[1].text
+                return json.loads(info_dict_str)
+        except (IndexError, json.JSONDecodeError) as e:
+            print(f"Could not parse JSON-LD script: {e}")
+        return {}
 
     @cached_property
-    def image_url(self) -> str:
-        """
-        Returns the URL of the recipe's image.
-
-        Returns:
-            str: The URL of the recipe's image.
-
-        Raises:
-            ValueError: If the image is not found.
-        """
-        image: str = self.__soup.find("amp-img").find("img")["src"]
-        if image:
-            return image
-        raise ValueError("Image not found")
+    def title(self) -> Optional[str]:
+        """Returns the title of the recipe."""
+        return self.__info_dict.get("name")
 
     @cached_property
-    def image_base64(self) -> bytes:
-        """
-        Returns the base64-encoded content of the recipe's image.
+    def image_url(self) -> Optional[str]:
+        """Returns the URL of the recipe's main image."""
+        image_data = self.__info_dict.get("image")
+        if not image_data:
+            return None
 
-        Returns:
-            bytes: The base64-encoded content of the recipe's image.
-        """
-        response = requests.get(self.image_url)
-        return response.content
+        # Image data can be a dictionary or a list of dictionaries
+        if isinstance(image_data, list) and image_data:
+            return image_data[0].get("url")
+        if isinstance(image_data, dict):
+            return image_data.get("url")
+        return None
+
+    @cached_property
+    def image_base64(self) -> Optional[bytes]:
+        """Returns the content of the recipe's image as bytes."""
+        if not self.image_url:
+            return None
+        try:
+            response = requests.get(self.image_url, timeout=10)
+            response.raise_for_status()
+            return response.content
+        except requests.exceptions.RequestException as e:
+            print(f"Error fetching recipe image: {e}")
+            return None
 
     @cached_property
     def image_urls(self) -> List[str]:
-        """
-        Returns the URLs of all images associated with the recipe.
+        """Returns the URLs of all images associated with the recipe from JSON-LD."""
+        image_data = self.__info_dict.get("image")
+        urls = []
+        if not image_data:
+            return urls
 
-        Returns:
-            List[str]: The URLs of all images associated with the recipe.
-        """
-        response = requests.get(f"{BASE_URL}/bilderuebersicht/{self.id}")
-        image_soup = BeautifulSoup(response.content, "html.parser")
-        image_div = image_soup.find("div", {"class": "recipe-images"})
-        return [img["src"] for img in image_div.find_all("amp-img")]
+        image_list = image_data if isinstance(image_data, list) else [image_data]
+        for img in image_list:
+            if isinstance(img, dict) and img.get("url"):
+                urls.append(img["url"])
+        return urls
 
-    @cached_property
-    def date_published(self) -> datetime.datetime:
-        """
-        Returns the date when the recipe was published.
-
-        Returns:
-            datetime.datetime: The date when the recipe was published.
-        """
-        date_string = self.__info_dict["datePublished"]  # format 2014-04-13
-        date = datetime.datetime.strptime(date_string, "%Y-%m-%d")
-        return date
 
     @cached_property
-    def prep_time(self) -> isodate.Duration:
-        """
-        Returns the preparation time of the recipe.
+    def date_published(self) -> Optional[datetime.datetime]:
+        """Returns the publication date of the recipe."""
+        date_string = self.__info_dict.get("datePublished")
+        if date_string:
+            return datetime.datetime.strptime(date_string, "%Y-%m-%d")
+        return None
 
-        Returns:
-            isodate.Duration: The preparation time of the recipe.
-        """
-        time_str = self.__info_dict["prepTime"]  # format P0DT0H5M
-        return isodate.parse_duration(time_str)
-
-    @cached_property
-    def cook_time(self) -> isodate.Duration:
-        """
-        Returns the cooking time of the recipe.
-
-        Returns:
-            isodate.Duration: The cooking time of the recipe.
-        """
-        time_str = self.__info_dict["cookTime"]
-        return isodate.parse_duration(time_str)
+    def _parse_duration(self, key: str) -> Optional[isodate.Duration]:
+        """Helper to parse ISO 8601 duration strings from the info dict."""
+        time_str = self.__info_dict.get(key)
+        if time_str:
+            try:
+                return isodate.parse_duration(time_str)
+            except isodate.ISO8601Error:
+                return None
+        return None
 
     @cached_property
-    def total_time(self) -> isodate.Duration:
-        """
-        Returns the total time required to prepare the recipe.
-
-        Returns:
-            isodate.Duration: The total time required to prepare the recipe.
-        """
-        time_str = self.__info_dict["totalTime"]
-        return isodate.parse_duration(time_str)
+    def prep_time(self) -> Optional[isodate.Duration]:
+        """Returns the preparation time of the recipe."""
+        return self._parse_duration("prepTime")
 
     @cached_property
-    def difficulty(self) -> str:
-        """
-        Returns the difficulty level of the recipe.
-
-        Returns:
-            str: The difficulty level of the recipe.
-        """
-        return self.__soup.find("span", {"class": "recipe-difficulty"}).text.split()[-1]
+    def cook_time(self) -> Optional[isodate.Duration]:
+        """Returns the cooking time of the recipe."""
+        return self._parse_duration("cookTime")
 
     @cached_property
-    def ingredients(self):
-        """
-        Returns the list of ingredients required for the recipe.
+    def total_time(self) -> Optional[isodate.Duration]:
+        """Returns the total time required for the recipe."""
+        return self._parse_duration("totalTime")
 
-        Returns:
-            List[str]: The list of ingredients required for the recipe.
-        """
+    @cached_property
+    def difficulty(self) -> Optional[str]:
+        """Returns the difficulty level of the recipe."""
+        difficulty_div = self.__soup.find("div", {"class": "recipe-difficulty"})
+        if difficulty_div:
+            text_span = difficulty_div.find("span", {"class": "recipe-meta-text"})
+            if text_span:
+                return text_span.text.strip()
+        return None
+
+    @cached_property
+    def ingredients(self) -> List[str]:
+        """Returns the list of ingredients for the recipe."""
         return self.__info_dict.get("recipeIngredient", [])
 
     @cached_property
-    def instructions(self):
-        """
-        Returns the list of instructions to prepare the recipe.
-
-        Returns:
-            List[str]: The list of instructions to prepare the recipe.
-        """
-        return self.__info_dict.get("recipeInstructions", [])
-
-    @cached_property
-    def publisher(self):
-        """
-        Returns the name of the publisher of the recipe.
-
-        Returns:
-            str: The name of the publisher of the recipe.
-        """
-        return self.__info_dict.get("publisher", {}).get("name", "")
+    def instructions(self) -> List[str]:
+        """Returns the list of instructions to prepare the recipe."""
+        instructions_data = self.__info_dict.get("recipeInstructions", [])
+        parsed_instructions = []
+        for step in instructions_data:
+            if isinstance(step, dict) and step.get("@type") == "HowToStep":
+                parsed_instructions.append(step.get("text", "").strip())
+            elif isinstance(step, str): # Fallback for plain string instructions
+                parsed_instructions.append(step.strip())
+        return parsed_instructions
 
     @cached_property
-    def author(self):
-        """
-        Returns the name of the author of the recipe.
+    def publisher(self) -> Optional[str]:
+        """Returns the name of the publisher of the recipe."""
+        return self.__info_dict.get("publisher", {}).get("name")
 
-        Returns:
-            str: The name of the author of the recipe.
-        """
+    @cached_property
+    def author(self) -> Optional[str]:
+        """Returns the name of the author of the recipe."""
         author = self.__info_dict.get("author", {})
         if isinstance(author, dict):
-            return author.get("name", "")
-        elif isinstance(author, list) and author:
-            # Sometimes 'author' can be a list of dicts
-            return author[0].get("name", "")
-        return ""
+            return author.get("name")
+        if isinstance(author, list) and author:
+            return author[0].get("name")
+        return None
 
     @cached_property
-    def calories(self):
-        """
-        Returns the number of calories in the recipe.
-
-        Returns:
-            str: The number of calories in the recipe.
-        """
-        return self.__info_dict.get("nutrition", {}).get("calories", "")
+    def calories(self) -> Optional[str]:
+        """Returns the number of calories in the recipe."""
+        return self.__info_dict.get("nutrition", {}).get("calories")
 
     @cached_property
-    def keywords(self):
-        """
-        Returns the keywords associated with the recipe.
-
-        Returns:
-            str: The keywords associated with the recipe.
-        """
-        return self.__info_dict.get("keywords", "")
-
-    @cached_property
-    def number_reviews(self):
-        """
-        Returns the number of reviews for the recipe.
-
-        Returns:
-            int: The number of reviews for the recipe.
-        """
-        return self.__info_dict.get("aggregateRating", {}).get("reviewCount", 0)
+    def keywords(self) -> List[str]:
+        """Returns the keywords associated with the recipe."""
+        keywords_data = self.__info_dict.get("keywords", "")
+        if isinstance(keywords_data, str):
+            return [kw.strip() for kw in keywords_data.split(',')]
+        if isinstance(keywords_data, list):
+            return keywords_data
+        return []
 
     @cached_property
-    def number_ratings(self):
-        """
-        Returns the number of ratings for the recipe.
-
-        Returns:
-            int: The number of ratings for the recipe.
-        """
-        return self.__info_dict.get("aggregateRating", {}).get("ratingCount", 0)
+    def aggregate_rating(self) -> Dict[str, Any]:
+        """Helper to get the aggregateRating dictionary."""
+        return self.__info_dict.get("aggregateRating", {})
 
     @cached_property
-    def rating(self):
-        """
-        Returns the average rating of the recipe.
-
-        Returns:
-            float: The average rating of the recipe.
-        """
-        return self.__info_dict.get("aggregateRating", {}).get("ratingValue", 0.0)
+    def number_reviews(self) -> int:
+        """Returns the number of reviews for the recipe."""
+        return self.aggregate_rating.get("reviewCount", 0)
 
     @cached_property
-    def category(self):
-        """
-        Returns the category of the recipe.
+    def number_ratings(self) -> int:
+        """Returns the number of ratings for the recipe."""
+        return self.aggregate_rating.get("ratingCount", 0)
 
-        Returns:
-            str: The category of the recipe.
-        """
-        return self.__info_dict.get("recipeCategory", "")
+    @cached_property
+    def rating(self) -> float:
+        """Returns the average rating of the recipe."""
+        return float(self.aggregate_rating.get("ratingValue", 0.0))
 
-
-if __name__ == "__main__":
-    recipe = Recipe(url="https://www.chefkoch.de/rezepte/3163161470836947")
+    @cached_property
+    def category(self) -> Optional[str]:
+        """Returns the category of the recipe."""
+        return self.__info_dict.get("recipeCategory")
