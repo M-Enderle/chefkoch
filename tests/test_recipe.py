@@ -1,69 +1,73 @@
 import datetime
+import isodate
 
 from chefkoch import Recipe
 
+# Example URL with the new page structure
+NEW_STRUCTURE_URL = "https://www.chefkoch.de/rezepte/761171178862026/Erdnuss-Hackbaellchen-in-Currysauce.html"
+
 
 def test_from_url():
-    assert Recipe(url="https://www.chefkoch.de/rezepte/2307061368085964s") is not None
-    assert (
-        Recipe(url="https://www.chefkoch.de/rezepte/448991137121794/Waffeln.html")
-        is not None
-    )
+    """Tests recipe initialization from a URL."""
+    recipe = Recipe(url=NEW_STRUCTURE_URL)
+    assert recipe is not None
+    assert recipe.id == "761171178862026"
 
 
 def test_from_id():
-    assert Recipe(id="745721177147257") is not None
-    assert Recipe(id="815071185883117") is not None
+    """Tests recipe initialization from an ID."""
+    recipe = Recipe(id="761171178862026")
+    assert recipe is not None
+    assert recipe.url == "https://www.chefkoch.de/rezepte/761171178862026"
 
 
-def test_attributes():
-    recipe = Recipe(
-        url="https://www.chefkoch.de/rezepte/2307061368085964/Maultaschen-Sauerkraut-Pfanne.html"
-    )
-    assert type(recipe.title) == str
-    assert recipe.title
+def test_new_structure_attributes():
+    """Tests if attributes are correctly scraped from the new page structure."""
+    recipe = Recipe(url=NEW_STRUCTURE_URL)
 
-    assert type(recipe.ingredients) == list
-    assert recipe.ingredients
+    assert recipe.title == "Erdnuss-Hackbällchen in Currysauce"
+    assert isinstance(recipe.title, str)
 
-    assert type(recipe.instructions) == str
+    assert "Zwiebel(n)" in recipe.ingredients
+    assert isinstance(recipe.ingredients, list)
+
     assert recipe.instructions
+    assert isinstance(recipe.instructions, list)
+    assert isinstance(recipe.instructions[0], str)
 
-    assert type(recipe.image_urls) == list
-    assert recipe.image_urls
+    assert recipe.image_url.startswith("https://img.chefkoch-cdn.de/")
+    assert isinstance(recipe.image_url, str)
 
-    assert type(recipe.image_base64) == bytes
-    assert recipe.image_base64
+    assert isinstance(recipe.image_urls, list)
+    assert recipe.image_urls[0].startswith("https://img.chefkoch-cdn.de/")
 
-    assert type(recipe.date_published) == datetime.datetime
-    assert recipe.date_published
+    assert isinstance(recipe.image_base64, bytes)
 
-    assert type(recipe.prep_time) == datetime.timedelta
-    assert recipe.prep_time
+    assert recipe.date_published == datetime.datetime(2007, 10, 16)
+    assert isinstance(recipe.date_published, datetime.datetime)
 
-    assert type(recipe.category) == str
-    assert recipe.category
+    assert recipe.prep_time == isodate.parse_duration("PT20M")
+    assert isinstance(recipe.prep_time, isodate.duration.Duration)
 
-    assert type(recipe.difficulty) == str
-    assert recipe.difficulty
+    assert recipe.cook_time == isodate.parse_duration("PT25M")
+    assert isinstance(recipe.cook_time, isodate.duration.Duration)
 
-    assert type(recipe.publisher) == str
-    assert recipe.publisher
+    assert recipe.total_time == isodate.parse_duration("PT45M")
+    assert isinstance(recipe.total_time, isodate.duration.Duration)
 
-    assert type(recipe.keywords) == list
-    assert recipe.keywords
+    assert recipe.difficulty == "simpel"
+    assert isinstance(recipe.difficulty, str)
 
-    assert type(recipe.number_reviews) == int
-    assert recipe.number_reviews
+    assert recipe.author == "saeva"
+    assert isinstance(recipe.author, str)
 
-    assert type(recipe.number_ratings) == int
-    assert recipe.number_ratings
+    assert "Hauptspeise" in recipe.category
+    assert isinstance(recipe.category, str)
 
-    assert type(recipe.rating) == float
-    assert recipe.rating
+    assert recipe.calories == "834 kcal"
 
-    assert type(recipe.total_time) == datetime.timedelta
-    assert recipe.total_time
+    assert recipe.rating > 0
+    assert isinstance(recipe.rating, float)
 
-    assert type(recipe.cook_time) == datetime.timedelta
-    assert recipe.total_time
+    assert recipe.number_ratings > 0
+    assert isinstance(recipe.number_ratings, int)
