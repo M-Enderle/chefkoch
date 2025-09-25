@@ -2,6 +2,7 @@
 
 import datetime
 import json
+import re
 from functools import cached_property
 from typing import List, Optional, Union, Dict, Any
 
@@ -36,29 +37,33 @@ class Recipe:
         if id is not None:
             url = f"{BASE_URL}/{id}"
 
-        if not url.startswith(BASE_URL):
+        if not url.startswith(BASE_URL.split("/rezepte")[0]):
             raise ValueError("Invalid url")
 
-        self.url: str = url
+        # Clean URL from query parameters
+        self.url: str = url.split("?")[0]
 
         if id is None:
             try:
                 # Extracts the numeric ID from the URL path
-                id_part = url.split("/")[4]
+                id_part = self.url.split("/")[4]
                 self.id: str = id_part
             except IndexError:
                 raise ValueError("Could not extract recipe ID from URL.")
         else:
             self.id = id
 
-
     @cached_property
     def __soup(self) -> BeautifulSoup:
         """
         Returns the BeautifulSoup object of the recipe's webpage.
+        Includes a User-Agent to mimic a real browser.
         """
-        response = requests.get(self.url)
-        response.raise_for_status() # Raise an exception for bad status codes
+        headers = {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+        }
+        response = requests.get(self.url, headers=headers)
+        response.raise_for_status()  # Raise an exception for bad status codes
         return BeautifulSoup(response.content, "html.parser")
 
     @cached_property
@@ -121,10 +126,10 @@ class Recipe:
         if isinstance(image_data, str):
             return image_data
 
-        # Fallback to scraping the amp-img tag
-        image_tag = self.__soup.find("amp-img")
-        if image_tag and image_tag.find("img"):
-            return image_tag.find("img")["src"]
+        # Fallback to scraping meta tags, which is more reliable than specific element classes
+        og_image = self.__soup.find("meta", property="og:image")
+        if og_image and og_image.get("content"):
+            return og_image["content"]
 
         raise ValueError("Image not found")
 
@@ -151,13 +156,13 @@ class Recipe:
     def date_published(self) -> datetime.datetime:
         """Returns the date when the recipe was published."""
         if self.__is_new_format:
-            date_string = self.__recipe_data.get("createdAt") # e.g., "2022-11-23T09:27:04.288Z"
+            date_string = self.__recipe_data.get("createdAt")  # e.g., "2022-11-23T09:27:04.288Z"
             if date_string:
                 if date_string.endswith('Z'):
                     date_string = date_string[:-1] + '+00:00'
                 return datetime.datetime.fromisoformat(date_string)
         else:
-            date_string = self.__recipe_data.get("datePublished") # e.g., "2014-04-13"
+            date_string = self.__recipe_data.get("datePublished")  # e.g., "2014-04-13"
             if date_string:
                 return datetime.datetime.strptime(date_string, "%Y-%m-%d")
 
@@ -170,23 +175,53 @@ class Recipe:
         if isinstance(time_val, int):
             return isodate.parse_duration(f"PT{time_val}M")
         if isinstance(time_val, str) and time_val:
-            return isodate.parse_duration(time_val)
+            try:
+                return isodate.parse_duration(time_val)
+            except isodate.ISO8601Error:
+                return None
         return None
+
+    def _scrape_time(self, class_name: str) -> Optional[isodate.Duration]:
+        """Helper function to scrape time values from HTML as a fallback."""
+        try:
+            time_tag = self.__soup.find(class_=class_name)
+            if time_tag:
+                time_str = time_tag.get_text(strip=True)
+                minutes = re.search(r'\d+', time_str)
+                if minutes:
+                    return isodate.parse_duration(f"PT{minutes.group(0)}M")
+        except AttributeError:
+            pass
+        return None
+
 
     @cached_property
     def prep_time(self) -> Optional[isodate.Duration]:
         """Returns the preparation time of the recipe."""
-        return self._parse_duration(self.__recipe_data.get("prepTime"))
+        duration = self._parse_duration(self.__recipe_data.get("prepTime"))
+        return duration if duration is not None else self._scrape_time("recipe-preptime")
 
     @cached_property
     def cook_time(self) -> Optional[isodate.Duration]:
         """Returns the cooking time of the recipe."""
-        return self._parse_duration(self.__recipe_data.get("cookTime"))
+        duration = self._parse_duration(self.__recipe_data.get("cookTime"))
+        return duration if duration is not None else self._scrape_time("recipe-cooktime")
 
     @cached_property
     def total_time(self) -> Optional[isodate.Duration]:
         """Returns the total time required to prepare the recipe."""
-        return self._parse_duration(self.__recipe_data.get("totalTime"))
+        duration = self._parse_duration(self.__recipe_data.get("totalTime"))
+        if duration:
+            return duration
+        # If not in JSON, try to sum up prep and cook time
+        if self.prep_time and self.cook_time:
+            return self.prep_time + self.cook_time
+        return self.prep_time or self.cook_time or self._scrape_time("recipe-totaltime")
+
+    @cached_property
+    def rest_time(self) -> Optional[isodate.Duration]:
+        """Scrapes the resting time from the recipe meta data, if available."""
+        return self._scrape_time("recipe-resttime")
 
     @cached_property
     def difficulty(self) -> str:
@@ -196,12 +231,38 @@ class Recipe:
             difficulty_key = self.__recipe_data.get("difficulty")
             return diff_map.get(difficulty_key, "unklar")
 
-        # Fallback for old format
-        difficulty_tag = self.__soup.find("span", {"class": "recipe-difficulty"})
+        # Fallback for old format, using regex for more robust class matching
+        difficulty_tag = self.__soup.find("span", class_=re.compile(r"recipe-difficulty"))
         if difficulty_tag and difficulty_tag.text:
-            return difficulty_tag.text.strip().split()[-1]
+            return difficulty_tag.text.strip()
 
         return "unklar"
+
+    @cached_property
+    def servings(self) -> Optional[int]:
+        """Returns the number of servings."""
+        if self.__is_new_format:
+            servings = self.__recipe_data.get("servings")
+            if servings:
+                return int(servings)
+
+        # Old format from JSON-LD
+        yield_str = self.__recipe_data.get("recipeYield")
+        if isinstance(yield_str, (list, str)):
+            yield_str = str(yield_str[0] if isinstance(yield_str, list) else yield_str)
+            match = re.search(r'\d+', yield_str)
+            if match:
+                return int(match.group(0))
+
+        # Fallback to scraping the input field
+        try:
+            servings_input = self.__soup.find("input", {"name": "portionen"})
+            if servings_input and servings_input.get("value"):
+                return int(servings_input["value"])
+        except (AttributeError, ValueError):
+            pass
+
+        return None
 
     @cached_property
     def ingredients(self) -> List[str]:
@@ -211,7 +272,8 @@ class Recipe:
             for group in self.__recipe_data.get("ingredientGroups", []):
                 for ingredient in group.get("ingredients", []):
                     parts = [
-                        str(ingredient["amount"]) if ingredient.get("amount") is not None and ingredient.get("amount") > 0 else "",
+                        str(ingredient["amount"]) if ingredient.get("amount") is not None and ingredient.get(
+                            "amount") > 0 else "",
                         ingredient.get("unit", ""),
                         ingredient.get("name", ""),
                     ]
@@ -263,9 +325,12 @@ class Recipe:
         """Returns the calories of the recipe as a string (e.g., '432 kcal')."""
         nutrition = self.__recipe_data.get("nutrition", {})
         if self.__is_new_format:
-            return nutrition.get("nutrients", {}).get("calories", "k.A.")
+            kcal = nutrition.get("nutrients", {}).get("calories")
+            return f"{kcal} kcal" if kcal else "k.A."
 
-        return nutrition.get("calories", "k.A.")
+        calories = nutrition.get("calories")
+        return calories if calories else "k.A."
+
 
     @cached_property
     def keywords(self) -> List[str]:
