@@ -226,7 +226,7 @@ class Recipe:
         if self.__is_new_format:
             diff_map = {"SIMPLE": "simpel", "NORMAL": "normal", "ADVANCED": "pfiffig"}
             difficulty_key = self.__recipe_data.get("difficulty")
-            if difficulty_key: return diff_map.get(difficulty_key, "unklar").lower()
+            if difficulty_key: return diff_map.get(difficulty_key, "unknown").lower()
 
         # Priority 2: Old JSON-LD format
         difficulty_tag_json = self.__recipe_data.get("recipeDifficulty")
