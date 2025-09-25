@@ -108,7 +108,7 @@ class Recipe:
             return title
         # Absolute fallback if JSON fails
         title_tag = self.__soup.find("h1")
-        return title_tag.get_text(strip=True) if title_tag else "Titel nicht gefunden"
+        return title_tag.get_text(strip=True) if title_tag else "Title not found"
 
 
     @cached_property
@@ -129,7 +129,7 @@ class Recipe:
         if og_image and og_image.get("content"):
             return og_image["content"]
 
-        return "Bild nicht gefunden"
+        return "picture not found"
 
     def _parse_duration(self, time_val: Optional[Union[str, int]]) -> Optional[isodate.Duration]:
         """Helper to parse duration from ISO string ('PT15M') or minutes (15)."""
@@ -294,20 +294,36 @@ class Recipe:
     @cached_property
     def instructions(self) -> str:
         """Returns the preparation instructions as a single string."""
+        # Priority 1: New JSON format from __NEXT_DATA__
         if self.__is_new_format:
-            instructions = self.__recipe_data.get("instructions", "")
-            if instructions: return instructions
+            instructions = self.__recipe_data.get("instructions")
+            if instructions and isinstance(instructions, str):
+                return instructions.strip()
 
+        # Priority 2: Old JSON-LD format
         instruction_data = self.__recipe_data.get("recipeInstructions", [])
         if isinstance(instruction_data, list):
-            texts = [step.get("text", "") for step in instruction_data if isinstance(step, dict)]
-            if texts: return "\n".join(texts)
+            texts = [step.get("text", "") for step in instruction_data if isinstance(step, dict) and step.get("text")]
+            if texts:
+                return "\n".join(texts).strip()
         if isinstance(instruction_data, str):
-            return instruction_data
+            return instruction_data.strip()
 
-        # Fallback to scraping
+        # Fallback 1: Scrape by specific class from user-provided HTML
+        try:
+            instruction_spans = self.__soup.find_all('span', class_="instruction__text")
+            if instruction_spans:
+                all_instructions = [span.get_text(strip=True) for span in instruction_spans]
+                return "\n".join(all_instructions).strip()
+        except Exception:
+            pass
+
+        # Fallback 2: Scrape by common ID for very old layouts
         instructions_div = self.__soup.find("div", id="rezept-zubereitung")
-        return instructions_div.get_text("\n", strip=True) if instructions_div else ""
+        if instructions_div:
+            return instructions_div.get_text("\n", strip=True)
+
+        return ""
 
 
     @cached_property
