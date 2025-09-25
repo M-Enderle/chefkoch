@@ -103,13 +103,14 @@ class Recipe:
     @cached_property
     def title(self) -> str:
         """Returns the title of the recipe."""
-        title = self.__recipe_data.get("title") or self.__recipe_data.get("name")
-        if title:
-            return title
-        # Absolute fallback if JSON fails
-        title_tag = self.__soup.find("h1")
-        return title_tag.get_text(strip=True) if title_tag else "Title not found"
+        title_str = self.__recipe_data.get("title") or self.__recipe_data.get("name")
+        if not title_str:
+            # Absolute fallback if JSON fails
+            title_tag = self.__soup.find("h1")
+            title_str = title_tag.get_text(strip=True) if title_tag else "Title not found"
 
+        # Clean up title from authors etc.
+        return title_str.split(" von ")[0].split(" - ")[0].strip()
 
     @cached_property
     def image_url(self) -> str:
@@ -146,35 +147,56 @@ class Recipe:
     def _scrape_time(self, search_texts: List[str]) -> Optional[isodate.Duration]:
         """Robust helper to scrape time by searching for text labels in the HTML."""
         try:
-            parent_tag = self.__soup.find(lambda tag: tag.string and any(s.lower() in tag.string.lower() for s in search_texts))
-            if parent_tag:
-                # Navigate up to a more meaningful parent if needed
-                container = parent_tag.find_parent(class_=re.compile(r'recipe-meta-item|ds-mb-right'))
-                text_to_search = container.get_text(strip=True) if container else parent_tag.get_text(strip=True)
+            # Find any tag containing one of the search texts (case-insensitive)
+            label_tag = self.__soup.find(lambda tag: tag.string and any(s.lower() in tag.string.lower() for s in search_texts))
 
-                minutes_match = re.search(r'(\d+)\s*(Min\.|Minuten)', text_to_search, re.IGNORECASE)
-                if minutes_match:
-                    return isodate.parse_duration(f"PT{minutes_match.group(1)}M")
+            if not label_tag:
+                return None
+
+            # Find the closest common ancestor that likely holds both the label and value
+            container = label_tag.find_parent(class_=re.compile(r"recipe-meta-property-group__cell|recipe-meta-item|ds-preparation-times__cell"))
+            if not container:
+                container = label_tag.find_parent() # A more generic parent
+
+            if not container:
+                return None
+
+            text_to_search = container.get_text(strip=True, separator=' ')
+
+            total_minutes = 0
+            # Search for "X Std." or "X h"
+            hours_match = re.search(r'(\d+)\s*(?:Std\.?|Stunde|Stunden|h)', text_to_search, re.IGNORECASE)
+            if hours_match:
+                total_minutes += int(hours_match.group(1)) * 60
+
+            # Search for "X Min."
+            minutes_match = re.search(r'(\d+)\s*(?:Min\.?|Minuten)', text_to_search, re.IGNORECASE)
+            if minutes_match:
+                total_minutes += int(minutes_match.group(1))
+
+            if total_minutes > 0:
+                return isodate.parse_duration(f"PT{total_minutes}M")
+
         except Exception:
-            pass
+            pass # Fallback should not raise errors
         return None
 
     @cached_property
     def prep_time(self) -> Optional[isodate.Duration]:
         """Returns the preparation time of the recipe."""
-        duration = self._parse_duration(self.__recipe_data.get("prepTime"))
-        return duration or self._scrape_time(["Zubereitungszeit:", "Arbeitszeit:"])
+        duration = self._parse_duration(self.__recipe_data.get("preparationTime") or self.__recipe_data.get("prepTime"))
+        return duration or self._scrape_time(["Zubereitungszeit", "Arbeitszeit"])
 
     @cached_property
     def cook_time(self) -> Optional[isodate.Duration]:
         """Returns the cooking time of the recipe."""
-        duration = self._parse_duration(self.__recipe_data.get("cookTime"))
-        return duration or self._scrape_time(["Koch-/Backzeit:", "Backzeit:"])
+        duration = self._parse_duration(self.__recipe_data.get("cookingTime") or self.__recipe_data.get("cookTime"))
+        return duration or self._scrape_time(["Koch-/Backzeit", "Backzeit"])
 
     @cached_property
     def rest_time(self) -> Optional[isodate.Duration]:
         """Scrapes the resting time from the recipe meta data, if available."""
-        return self._scrape_time(["Ruhezeit:"])
+        return self._scrape_time(["Ruhezeit"])
 
     @cached_property
     def total_time(self) -> Optional[isodate.Duration]:
@@ -184,7 +206,7 @@ class Recipe:
             return duration
 
         # Fallback: Scrape or calculate
-        scraped_total = self._scrape_time(["Gesamtzeit:"])
+        scraped_total = self._scrape_time(["Gesamtzeit"])
         if scraped_total:
             return scraped_total
 
