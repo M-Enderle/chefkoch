@@ -200,21 +200,42 @@ class Recipe:
     @cached_property
     def difficulty(self) -> str:
         """Returns the difficulty level of the recipe."""
+        # Priority 1: New JSON format
         if self.__is_new_format:
             diff_map = {"SIMPLE": "simpel", "NORMAL": "normal", "ADVANCED": "pfiffig"}
             difficulty_key = self.__recipe_data.get("difficulty")
-            if difficulty_key: return diff_map.get(difficulty_key, "unklar")
+            if difficulty_key: return diff_map.get(difficulty_key, "unklar").lower()
 
-        # Fallback for old format
-        difficulty_tag = self.__soup.find(class_=re.compile(r"recipe-difficulty"))
-        if difficulty_tag:
-            strong_tag = difficulty_tag.find("strong")
-            if strong_tag:
-                return strong_tag.get_text(strip=True)
-            text = difficulty_tag.get_text(strip=True)
-            return text.split(":")[-1].strip() if ":" in text else text
+        # Priority 2: Old JSON-LD format
+        difficulty_tag_json = self.__recipe_data.get("recipeDifficulty")
+        if difficulty_tag_json: return str(difficulty_tag_json).lower()
 
-        return "unklar"
+        # Priority 3: Robust scraping for sibling structure from user snippet
+        try:
+            title_div = self.__soup.find('div', class_="recipe-meta-property-group__title", string=re.compile(r'Schwierigkeit', re.I))
+            if title_div:
+                value_div = title_div.find_previous_sibling("div", class_="recipe-meta-property-group__value")
+                if value_div:
+                    return value_div.get_text(strip=True).lower()
+        except Exception:
+            pass
+
+        # Priority 4: Fallback for very old formats (find by text node)
+        try:
+            diff_text_node = self.__soup.find(string=re.compile(r'\s*Schwierigkeitsgrad\s*:?\s*', re.IGNORECASE))
+            if diff_text_node:
+                parent = diff_text_node.find_parent()
+                if parent:
+                    value_tag = parent.find("strong")
+                    if value_tag:
+                        return value_tag.get_text(strip=True).lower()
+                    full_text = parent.get_text(strip=True)
+                    if ":" in full_text:
+                        return full_text.split(":")[-1].strip().lower()
+        except Exception:
+            pass
+
+        return "unknown"
 
     @cached_property
     def servings(self) -> Optional[int]:
