@@ -42,7 +42,11 @@ class RandomRetriever:
         Returns:
             Recipe: The retrieved recipe.
         """
-        return Recipe(url=self.session.get(RANDOM_RECIPE_URL).url)
+        while True:
+            try:
+                return Recipe(url=self.session.get(RANDOM_RECIPE_URL).url)
+            except ValueError:
+                continue
 
     def close(self):
         """
@@ -369,7 +373,8 @@ class SearchRetriever:
 
         recipe_cards = soup.find_all("div", {"class": "ds-recipe-card"})
         recipe_links = [card.find("a") for card in recipe_cards]
-        return [Recipe(url=link["href"]) for link in recipe_links]
+        recipes = [Recipe(url=link["href"], allow_premium=True) for link in recipe_links]
+        return [recipe for recipe in recipes if not recipe.is_premium]
 
     def close(self):
         """
@@ -425,10 +430,20 @@ class DailyRecipeRetriever:
             for link in recipe_links
             if link["href"].startswith("https://www.chefkoch.de/rezept")
         ]
-        return [Recipe(url=link["href"]) for link in recipe_links]
+        recipes = [Recipe(url=link["href"], allow_premium=True) for link in recipe_links]
+        return [recipe for recipe in recipes if not recipe.is_premium]
 
     def close(self):
         """
         Closes the session and all adapters.
         """
         self.session.close()
+
+
+if __name__ == "__main__":
+    r = DailyRecipeRetriever()
+    for _ in range(100):
+        recipes = r.get_recipes("kochen")
+        for recipe in recipes:
+            assert not recipe.is_premium
+    r.close()

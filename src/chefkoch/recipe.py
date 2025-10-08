@@ -41,13 +41,14 @@ class Recipe:
         category (str): The category of the recipe.
     """
 
-    def __init__(self, url: Optional[str] = None, id: Optional[str] = None):
+    def __init__(self, url: Optional[str] = None, id: Optional[str] = None, allow_premium: bool = False):
         """
-        Initializes a Recipe object.
+        Initializes a Recipe object. Will raise an error if the recipe is premium and allow_premium is False.
 
         Args:
             url (str, optional): The URL of the recipe. Defaults to None.
             id (str, optional): The ID of the recipe. Defaults to None.
+            allow_premium (bool, optional): Whether to allow premium recipes. Defaults to False.
 
         Raises:
             ValueError: If neither url nor id is provided.
@@ -68,6 +69,9 @@ class Recipe:
 
         self.url: str = url
         self.id: str = id
+
+        if not allow_premium and self.is_premium:
+            raise ValueError("This is a premium recipe. Set allow_premium to True to allow premium recipes.")
 
     @cached_property
     def __info_dict(self):
@@ -107,6 +111,17 @@ class Recipe:
         if text:
             return text
         raise ValueError("Title not found")
+
+    @cached_property
+    def is_premium(self) -> bool:
+        """
+        Returns whether the recipe is a premium recipe.
+
+        Returns:
+            bool: True if the recipe is a premium recipe, False otherwise.
+        """
+        plus_element = self.__soup.find(attrs={"aria-label": "Chefkoch PLUS"})
+        return plus_element is not None
 
     @cached_property
     def image_url(self) -> str:
@@ -311,4 +326,6 @@ class Recipe:
 
 
 if __name__ == "__main__":
-    recipe = Recipe(url="https://www.chefkoch.de/rezepte/3163161470836947")
+    recipe = Recipe(url="https://www.chefkoch.de/rezepte/4168421666771617/Lammschulter-in-Wermutfond.html", allow_premium=False)
+    print(recipe.title)
+    print(recipe.is_premium)
