@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "python-chefkoch"
-version = "2.1.1"
+version = "2.1.2"
 description = "Python library to retrieve information from chefkoch.de"
 authors = ["Moritz Enderle <contact@moritzenderle.com>"]
 license = "MIT"
