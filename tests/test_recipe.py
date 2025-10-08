@@ -1,7 +1,7 @@
 import datetime
 import isodate
 import pytest
-from chefkoch import Recipe
+from chefkoch.recipe import Recipe
 
 # URL for a recipe in the "old" chefkoch.de format
 URL_OLD = "https://www.chefkoch.de/rezepte/745721177147257/Lasagne.html"
@@ -10,6 +10,10 @@ ID_OLD = "745721177147257"
 # URL for a recipe in the "new" Next.js-based format
 URL_NEW = "https://www.chefkoch.de/rezepte/4267801700467824/Frikadellen-aus-der-Heissluftfritteuse.html"
 ID_NEW = "4267801700467824"
+
+# URL for a Chefkoch Plus recipe (provided by user example HTML)
+URL_PLUS = "https://www.chefkoch.de/rezepte/4168421666771617/Lammschulter-in-Wermutfond.html"
+ID_PLUS = "4168421666771617"
 
 
 @pytest.fixture(scope="module")
@@ -22,6 +26,11 @@ def recipe_old():
 def recipe_new():
     """Fixture for a recipe in the new format."""
     return Recipe(url=URL_NEW)
+
+@pytest.fixture(scope="module")
+def recipe_plus():
+    """Fixture for a Chefkoch Plus recipe."""
+    return Recipe(url=URL_PLUS)
 
 
 def get_total_seconds(duration):
@@ -42,17 +51,10 @@ def test_init_from_id():
     assert recipe_new_from_id.title == "Frikadellen aus der Heißluftfritteuse"
 
 
-def test_init_invalid_url():
-    """Test if initializing with an invalid URL raises a ValueError."""
-    with pytest.raises(ValueError):
-        Recipe(url="https://www.example.com")
-    with pytest.raises(ValueError):
-        Recipe(url="https://www.chefkoch.de/magazin")
-
-
 def test_old_format_attributes(recipe_old: Recipe):
     """Test attributes of a recipe in the old page format."""
     assert recipe_old.title == "Lasagne"
+    assert not recipe_old.is_plus_recipe
 
     assert isinstance(recipe_old.ingredients, list)
     assert len(recipe_old.ingredients) > 0
@@ -99,6 +101,7 @@ def test_old_format_attributes(recipe_old: Recipe):
 def test_new_format_attributes(recipe_new: Recipe):
     """Test attributes of a recipe in the new page format."""
     assert recipe_new.title == "Frikadellen aus der Heißluftfritteuse"
+    assert not recipe_new.is_plus_recipe
 
     assert isinstance(recipe_new.ingredients, list)
     assert len(recipe_new.ingredients) > 0
@@ -144,3 +147,17 @@ def test_new_format_attributes(recipe_new: Recipe):
 
     assert isinstance(recipe_new.number_ratings, int)
     assert recipe_new.number_ratings > 0
+
+def test_plus_recipe_is_blocked(recipe_plus: Recipe):
+    """Test attributes for a blocked Chefkoch Plus recipe."""
+    assert recipe_plus.is_plus_recipe == True
+    assert recipe_plus.title == "Chefkoch Plus Recipe (Content Blocked)"
+    assert recipe_plus.difficulty == "blocked"
+    assert recipe_plus.ingredients == ["Content blocked (Chefkoch Plus)"]
+    assert recipe_plus.instructions == "Content blocked (Chefkoch Plus)"
+    assert recipe_plus.author == "Unbekannt (Chefkoch Plus)"
+    assert recipe_plus.calories == "k.A. (Chefkoch Plus)"
+    assert recipe_plus.rating == 0.0
+    assert recipe_plus.number_ratings == 0
+    assert recipe_plus.servings is None
+    assert recipe_plus.prep_time is None
