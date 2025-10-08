@@ -68,17 +68,50 @@ class Recipe:
         return bool(self.__soup.find("script", id="__NEXT_DATA__"))
 
     @cached_property
+    def __check_for_plus_recipe(self) -> bool:
+        """
+        Checks if the recipe is a 'Chefkoch Plus' recipe and requires a subscription.
+        We check for the presence of the specific subscription card/banner that hides content.
+        """
+        # 1. Check for the general 'ds-plus-badge' in the header (new layout)
+        if self.__soup.find(class_="ds-plus-badge"):
+             # 2. Check for the subscription content card that indicates blocked content
+            if self.__soup.find(class_="ds-subscription-card--plus"):
+                return True
+
+        # Fallback check for older/other layouts that might block content
+        # (e.g., finding the ingredient table but also seeing a subscription prompt)
+        if self.__soup.find(class_="subscription-card") and self.__soup.find("h3", string=re.compile(r"Mit PLUS weiterkochen")):
+             return True
+
+        return False
+
+    @cached_property
+    def is_plus_recipe(self) -> bool:
+        """Public property to check if the recipe is marked as Plus/Premium."""
+        return self.__check_for_plus_recipe
+
+    @cached_property
     def __recipe_data(self) -> Dict[str, Any]:
         """
         Extracts recipe data from the page's JSON scripts (JSON-LD or __NEXT_DATA__).
         This is the primary method for data extraction.
+
+        Note: If a recipe is marked as Plus/Premium, this method will return an empty
+        dict because the core data will not be available in the HTML/JSON response
+        without being logged in as a Plus member.
         """
+        # If the page is detected as Plus, immediately return no data
+        if self.is_plus_recipe:
+            return {}
+
         # New format (preferred): __NEXT_DATA__
         if self.__is_new_format:
             next_data_script = self.__soup.find("script", id="__NEXT_DATA__")
             if next_data_script and next_data_script.string:
                 data = json.loads(next_data_script.string)
                 page_props = data.get("props", {}).get("pageProps", {})
+                # Note: 'recipe' might be null even if the wrapper exists, indicating blocked content
                 recipe_data = page_props.get("recipe") or page_props.get("initialRecipe")
                 if recipe_data:
                     return recipe_data
@@ -103,6 +136,9 @@ class Recipe:
     @cached_property
     def title(self) -> str:
         """Returns the title of the recipe."""
+        if self.is_plus_recipe:
+            return "Chefkoch Plus Recipe (Content Blocked)"
+
         title_str = self.__recipe_data.get("title") or self.__recipe_data.get("name")
         if not title_str:
             # Absolute fallback if JSON fails
@@ -115,6 +151,13 @@ class Recipe:
     @cached_property
     def image_url(self) -> str:
         """Returns the URL of the recipe's main image."""
+        if self.is_plus_recipe:
+            # Try to get the image URL anyway, usually available even for plus content
+            og_image = self.__soup.find("meta", property="og:image")
+            if og_image and og_image.get("content"):
+                return og_image["content"]
+            return "picture not found (Chefkoch Plus)"
+
         if self.__is_new_format:
             image_info = self.__recipe_data.get("image", {})
             if image_info and "url" in image_info:
@@ -184,23 +227,27 @@ class Recipe:
     @cached_property
     def prep_time(self) -> Optional[isodate.Duration]:
         """Returns the preparation time of the recipe."""
+        if self.is_plus_recipe: return None
         duration = self._parse_duration(self.__recipe_data.get("preparationTime") or self.__recipe_data.get("prepTime"))
         return duration or self._scrape_time(["Zubereitungszeit", "Arbeitszeit"])
 
     @cached_property
     def cook_time(self) -> Optional[isodate.Duration]:
         """Returns the cooking time of the recipe."""
+        if self.is_plus_recipe: return None
         duration = self._parse_duration(self.__recipe_data.get("cookingTime") or self.__recipe_data.get("cookTime"))
         return duration or self._scrape_time(["Koch-/Backzeit", "Backzeit"])
 
     @cached_property
     def rest_time(self) -> Optional[isodate.Duration]:
         """Scrapes the resting time from the recipe meta data, if available."""
+        if self.is_plus_recipe: return None
         return self._scrape_time(["Ruhezeit"])
 
     @cached_property
     def total_time(self) -> Optional[isodate.Duration]:
         """Returns the total time required to prepare the recipe."""
+        if self.is_plus_recipe: return None
         duration = self._parse_duration(self.__recipe_data.get("totalTime"))
         if duration:
             return duration
@@ -222,6 +269,8 @@ class Recipe:
     @cached_property
     def difficulty(self) -> str:
         """Returns the difficulty level of the recipe."""
+        if self.is_plus_recipe: return "blocked"
+
         # Priority 1: New JSON format
         if self.__is_new_format:
             diff_map = {"SIMPLE": "simpel", "NORMAL": "normal", "ADVANCED": "pfiffig"}
@@ -262,6 +311,7 @@ class Recipe:
     @cached_property
     def servings(self) -> Optional[int]:
         """Returns the number of servings."""
+        if self.is_plus_recipe: return None
         if self.__is_new_format:
             servings = self.__recipe_data.get("servings")
             if servings: return int(servings)
@@ -283,6 +333,8 @@ class Recipe:
     @cached_property
     def ingredients(self) -> List[str]:
         """Returns the list of ingredients required for the recipe."""
+        if self.is_plus_recipe: return ["Content blocked (Chefkoch Plus)"]
+
         if self.__is_new_format:
             ingredients_list = []
             for group in self.__recipe_data.get("ingredientGroups", []):
@@ -316,6 +368,8 @@ class Recipe:
     @cached_property
     def instructions(self) -> str:
         """Returns the preparation instructions as a single string."""
+        if self.is_plus_recipe: return "Content blocked (Chefkoch Plus)"
+
         # Priority 1: New JSON format from __NEXT_DATA__
         if self.__is_new_format:
             instructions = self.__recipe_data.get("instructions")
@@ -351,6 +405,8 @@ class Recipe:
     @cached_property
     def author(self) -> str:
         """Returns the name of the author of the recipe."""
+        if self.is_plus_recipe: return "Unbekannt (Chefkoch Plus)"
+
         if self.__is_new_format:
             author_name = self.__recipe_data.get("author", {}).get("username")
             if author_name: return author_name
@@ -369,6 +425,8 @@ class Recipe:
     @cached_property
     def calories(self) -> str:
         """Returns the calories of the recipe as a string (e.g., '432 kcal')."""
+        if self.is_plus_recipe: return "k.A. (Chefkoch Plus)"
+
         nutrition = self.__recipe_data.get("nutrition", {})
         if self.__is_new_format:
             kcal = nutrition.get("nutrients", {}).get("calories")
@@ -390,11 +448,13 @@ class Recipe:
     @cached_property
     def number_ratings(self) -> int:
         """Returns the number of ratings for the recipe."""
+        if self.is_plus_recipe: return 0
         rating_data = self._aggregate_rating
         return int(rating_data.get("numRatings", rating_data.get("ratingCount", 0)))
 
     @cached_property
     def rating(self) -> float:
         """Returns the average rating of the recipe."""
+        if self.is_plus_recipe: return 0.0
         rating_data = self._aggregate_rating
         return float(rating_data.get("average", rating_data.get("ratingValue", 0.0)))
