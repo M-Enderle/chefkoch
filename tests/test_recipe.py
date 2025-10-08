@@ -20,6 +20,7 @@ def test_attributes():
     recipe = Recipe(
         url="https://www.chefkoch.de/rezepte/2307061368085964/Maultaschen-Sauerkraut-Pfanne.html"
     )
+
     assert type(recipe.title) == str
     assert recipe.title
 
